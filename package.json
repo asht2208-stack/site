@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.js",
-    "generate": "node scripts/generate-article.js"
+    "generate": "node scripts/generate-article.js",
+    "draft-product": "node scripts/draft-product.js"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
