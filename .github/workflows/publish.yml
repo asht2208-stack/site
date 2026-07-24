@@ -2,9 +2,9 @@ name: Generate and publish article
 
 on:
   schedule:
-    # Twice a week: Monday and Thursday at 09:00 UTC
-    - cron: "0 9 * * 1,4"
-  workflow_dispatch: {} # lets you trigger a run manually from the Actions tab
+    # Twice daily: 09:00 and 21:00 UTC
+    - cron: "0 9,21 * * *"
+  workflow_dispatch: {}
 
 permissions:
   contents: write

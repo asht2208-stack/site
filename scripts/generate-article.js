@@ -1,39 +1,166 @@
-name: Generate and publish article
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-on:
-  schedule:
-    # Twice daily: 09:00 and 21:00 UTC
-    - cron: "0 9,21 * * *"
-  workflow_dispatch: {}
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, "..");
+const PRODUCTS_PATH = path.join(ROOT, "content/products.json");
+const ARTICLES_DIR = path.join(ROOT, "content/articles");
+const TOPICS_PATH = path.join(ROOT, "content/topics.txt");
 
-permissions:
-  contents: write
+const API_KEY = process.env.GEMINI_API_KEY;
+if (!API_KEY) {
+  console.error("Missing GEMINI_API_KEY environment variable / GitHub secret.");
+  process.exit(1);
+}
 
-jobs:
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+function loadProducts() {
+  const data = JSON.parse(fs.readFileSync(PRODUCTS_PATH, "utf-8"));
+  return data.products.filter((p) => !p.name.startsWith("REPLACE ME"));
+}
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
+function nextTopic() {
+  const lines = fs.readFileSync(TOPICS_PATH, "utf-8").split("\n").map((l) => l.trim()).filter(Boolean);
+  if (lines.length <= 3) {
+    return null;
+  }
+  const topic = lines[0];
+  fs.writeFileSync(TOPICS_PATH, lines.slice(1).join("\n") + "\n");
+  return topic;
+}
 
-      - name: Install dependencies
-        run: npm install
+function popTopic() {
+  const lines = fs.readFileSync(TOPICS_PATH, "utf-8").split("\n").map((l) => l.trim()).filter(Boolean);
+  if (lines.length === 0) {
+    console.error("No topics left in content/topics.txt even after replenishing — check the replenish step.");
+    process.exit(1);
+  }
+  const topic = lines[0];
+  fs.writeFileSync(TOPICS_PATH, lines.slice(1).join("\n") + "\n");
+  return topic;
+}
 
-      - name: Generate new article
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: npm run generate
+async function replenishTopics() {
+  console.log("Topic queue running low — asking Gemini for more topics.");
+  const existing = fs.readFileSync(TOPICS_PATH, "utf-8");
+  const prompt = `You write topic ideas for a niche content site called "The Compact Office", which publishes buying guides and setup tips for people creating a functional home office in a small apartment, dorm, or shared room in the US.
 
-      - name: Build site
-        run: npm run build
+Here are topics already used or queued (do not repeat these or anything too similar):
+${existing}
 
-      - name: Commit and push
-        run: |
-          git config user.name "site-bot"
-          git config user.email "site-bot@users.noreply.github.com"
-          git add content/articles content/topics.txt docs
-          git diff --staged --quiet || git commit -m "Auto-publish: new article $(date -u +%Y-%m-%d)"
-          git push
+Generate 20 new topic ideas for future articles, in the same style (short, specific, practical, each focused on one aspect of small-space home offices — desks, chairs, storage, lighting, cables, soundproofing, dual-use furniture, small-room layouts, budget setups, dorm setups, etc).
+
+Output ONLY a plain list, one topic per line, no numbering, no bullets, no extra commentary.`;
+  const text = await callGemini(prompt);
+  const newTopics = text
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0 && !l.startsWith("#"));
+  fs.writeFileSync(TOPICS_PATH, existing.trim() + "\n" + newTopics.join("\n") + "\n");
+  console.log(`Added ${newTopics.length} new topics to content/topics.txt`);
+}
+
+function slugify(title) {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+    .slice(0, 80);
+}
+
+async function callGemini(prompt) {
+  const res = await fetch(
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": API_KEY,
+      },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: 3000 },
+      }),
+    }
+  );
+  if (!res.ok) {
+    throw new Error(`Gemini API error ${res.status}: ${await res.text()}`);
+  }
+  const data = await res.json();
+  const parts = data.candidates?.[0]?.content?.parts || [];
+  return parts.map((p) => p.text || "").join("\n");
+}
+
+async function main() {
+  const products = loadProducts();
+  if (products.length === 0) {
+    console.error(
+      "content/products.json has no real products yet. Add at least one real Amazon product (with your affiliate tag) before generating articles."
+    );
+    process.exit(1);
+  }
+
+  let topic = nextTopic();
+  if (topic === null) {
+    await replenishTopics();
+    topic = popTopic();
+  }
+
+  const productBlock = products
+    .map(
+      (p) =>
+        `- id: ${p.id} | name: ${p.name} | category: ${p.category} | footprint: ${p.footprint} | price: ${p.price_range} | specs: ${p.key_specs.join(
+          ", "
+        )} | url: ${p.url}`
+    )
+    .join("\n");
+
+  const prompt = `You are writing one article for a niche site called "The Compact Office", which helps people in the USA set up a real, functional home office in a small apartment, dorm, or shared room.
+
+Topic for this article: "${topic}"
+
+You may ONLY recommend products from this exact list (do not invent products, prices, or specs — use only what's given):
+${productBlock}
+
+Write the article as Markdown with YAML frontmatter in exactly this format:
+
+---
+title: "..."
+excerpt: "one sentence, under 25 words"
+category: "Buying Guide" | "Setup Tips" | "Comparison"
+date: "${new Date().toISOString().slice(0, 10)}"
+---
+
+(article markdown body here)
+
+Requirements:
+- 700-1000 words, USA audience, practical and specific to small spaces.
+- Use H2 sections.
+- When recommending a specific product from the list above, insert this exact HTML block (fill in the values from the matching product):
+<div class="pick">
+  <div class="label">Recommended pick</div>
+  <div class="name">PRODUCT NAME</div>
+  <p>One or two sentences on why it fits, using only the specs given.</p>
+  <a class="buy" href="PRODUCT URL" rel="nofollow sponsored" target="_blank">Check price on Amazon</a>
+</div>
+- Do not make medical, legal, or guaranteed-outcome claims.
+- Do not fabricate reviews, ratings, or sales figures.
+- If none of the provided products genuinely fit this topic, say so plainly in the article rather than forcing a mismatched recommendation.
+- Output ONLY the frontmatter + markdown. No preamble, no code fences.`;
+
+  console.log(`Generating article for topic: ${topic}`);
+  const articleMd = await callGemini(prompt);
+
+  const titleMatch = articleMd.match(/title:\s*"(.*?)"/);
+  const title = titleMatch ? titleMatch[1] : topic;
+  const slug = slugify(title);
+
+  fs.mkdirSync(ARTICLES_DIR, { recursive: true });
+  fs.writeFileSync(path.join(ARTICLES_DIR, `${slug}.md`), articleMd.trim() + "\n");
+  console.log(`Wrote content/articles/${slug}.md`);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
