@@ -1,0 +1,14 @@
+{
+  "_instructions": "This is the ONLY source of truth for products the AI is allowed to recommend. Add a real Amazon product here (with your real affiliate tag in the url) before the generator can write about it. This keeps content accurate and links working — the one part of this pipeline that stays a manual, ~5-minute-a-week task. Replace YOURTAG-20 with your real Amazon Associates tracking ID.",
+  "products": [
+    {
+      "id": "example-standing-desk",
+      "name": "REPLACE ME — e.g. FlexiSpot 40in Compact Standing Desk",
+      "category": "desk",
+      "footprint": "e.g. 40in x 24in, fits against a wall in a small bedroom",
+      "price_range": "e.g. $150-200",
+      "key_specs": ["e.g. electric height adjust", "40lb weight capacity", "cable tray included"],
+      "url": "https://www.amazon.com/dp/REPLACE_ASIN?tag=YOURTAG-20"
+    }
+  ]
+}
