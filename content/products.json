@@ -2,13 +2,13 @@
   "_instructions": "This is the ONLY source of truth for products the AI is allowed to recommend. Add a real Amazon product here (with your real affiliate tag in the url) before the generator can write about it. This keeps content accurate and links working — the one part of this pipeline that stays a manual, ~5-minute-a-week task. Replace YOURTAG-20 with your real Amazon Associates tracking ID.",
   "products": [
     {
-      "id": "example-standing-desk",
-      "name": "REPLACE ME — e.g. FlexiSpot 40in Compact Standing Desk",
+      "id": "monomi-compact-standing-desk",
+      "name": "Monomi Small Electric Standing Desk (35\" x 20\", Black)",
       "category": "desk",
-      "footprint": "e.g. 40in x 24in, fits against a wall in a small bedroom",
-      "price_range": "e.g. $150-200",
-      "key_specs": ["e.g. electric height adjust", "40lb weight capacity", "cable tray included"],
-      "url": "https://www.amazon.com/dp/REPLACE_ASIN?tag=YOURTAG-20"
+      "footprint": "35in x 20in one-piece desktop, height adjustable 28.3in-46.5in, fits against a wall in a small bedroom or corner",
+      "price_range": "$125-$140",
+      "key_specs": ["electric height adjust 28.3in-46.5in", "anti-collision safety system", "3 memory height presets", "fits a dual-monitor setup or laptop plus monitor", "under 30 minute single-person assembly"],
+      "url": "https://www.amazon.com/dp/B0GSVK5S35?tag=compactoffi0a-20"
     }
   ]
 }
