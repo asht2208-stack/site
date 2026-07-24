@@ -1,6 +1,5 @@
 export const SITE_NAME = "The Compact Office";
 export const SITE_TAGLINE = "Small-footprint home office setups, reviewed for people who don't have a spare room.";
-// Real live URL — update this again later if you switch to a custom domain.
 export const SITE_URL = "https://asht2208-stack.github.io/site";
 
 function head(title, description) {
@@ -16,12 +15,17 @@ function head(title, description) {
 
 function header() {
   return `<header class="site-header">
-  <div class="wrap">
-    <a class="brand" href="index.html">${SITE_NAME} <span class="dim">≈ 6' × 8'</span></a>
+  <div class="wrap row">
+    <a class="brand" href="index.html">[<span class="bracket">${SITE_NAME}</span>]</a>
     <nav>
-      <a href="index.html">Articles</a>
+      <a href="index.html">Home</a>
+      <a href="index.html">Guides</a>
       <a href="about.html">About</a>
     </nav>
+    <div class="header-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="site-search" type="text" placeholder="Search guides...">
+    </div>
   </div>
 </header>`;
 }
@@ -34,7 +38,7 @@ function footer() {
 </footer>`;
 }
 
-export function pageShell({ title, description, bodyHtml }) {
+export function pageShell({ title, description, bodyHtml, extraScript = "" }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,15 +48,48 @@ ${head(title, description)}
 ${header()}
 ${bodyHtml}
 ${footer()}
+${extraScript}
 </body>
 </html>`;
 }
 
-export function articleCard({ slug, title, excerpt, date, category }) {
-  return `<div class="article-card">
-  <div class="eyebrow">${category || "Guide"}</div>
-  <h2><a href="articles/${slug}.html">${title}</a></h2>
-  <p class="excerpt">${excerpt}</p>
-  <div class="meta">${date}</div>
+function thumbStyle(image) {
+  return image ? `style="background-image:url('${image}')"` : "";
+}
+
+export function articleCard({ slug, title, excerpt, date, category, readTime, image }) {
+  return `<div class="article-card" data-search-title="${title.toLowerCase()}">
+  <div class="thumb ${image ? "" : "no-photo"}" ${thumbStyle(image)}></div>
+  <div class="card-body">
+    <div class="eyebrow">${category || "Guide"}</div>
+    <h3><a href="articles/${slug}.html">${title}</a></h3>
+    <p class="excerpt">${excerpt}</p>
+    <div class="meta"><span>${readTime}</span><span>${date}</span></div>
+  </div>
 </div>`;
 }
+
+export function sidebarItem({ slug, title, date, readTime, image }) {
+  return `<div class="sidebar-item">
+  <div class="thumb ${image ? "" : "no-photo"}" ${thumbStyle(image)}></div>
+  <div>
+    <h4><a href="articles/${slug}.html">${title}</a></h4>
+    <div class="meta">${readTime} &middot; ${date}</div>
+  </div>
+</div>`;
+}
+
+export const searchScript = `<script>
+(function() {
+  const input = document.getElementById('site-search');
+  if (!input) return;
+  const cards = Array.from(document.querySelectorAll('[data-search-title]'));
+  input.addEventListener('input', function() {
+    const q = input.value.trim().toLowerCase();
+    cards.forEach(function(card) {
+      const match = card.getAttribute('data-search-title').includes(q);
+      card.style.display = match ? '' : 'none';
+    });
+  });
+})();
+</script>`;

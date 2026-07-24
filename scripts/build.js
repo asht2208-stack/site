@@ -3,7 +3,15 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import matter from "gray-matter";
 import { marked } from "marked";
-import { pageShell, articleCard, SITE_NAME, SITE_TAGLINE, SITE_URL } from "../templates/layout.js";
+import {
+  pageShell,
+  articleCard,
+  sidebarItem,
+  searchScript,
+  SITE_NAME,
+  SITE_TAGLINE,
+  SITE_URL,
+} from "../templates/layout.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -12,11 +20,13 @@ const DOCS_DIR = path.join(ROOT, "docs");
 const DOCS_ARTICLES_DIR = path.join(DOCS_DIR, "articles");
 
 fs.mkdirSync(DOCS_ARTICLES_DIR, { recursive: true });
-
-// Copy stylesheet
 fs.copyFileSync(path.join(ROOT, "templates/style.css"), path.join(DOCS_DIR, "style.css"));
 
-// Load + parse all articles
+function readTimeFor(markdown) {
+  const words = markdown.trim().split(/\s+/).length;
+  return `${Math.max(1, Math.round(words / 200))} min read`;
+}
+
 const files = fs.existsSync(ARTICLES_DIR)
   ? fs.readdirSync(ARTICLES_DIR).filter((f) => f.endsWith(".md"))
   : [];
@@ -31,51 +41,111 @@ const articles = files.map((file) => {
     excerpt: data.excerpt || "",
     category: data.category || "Guide",
     date: data.date || "",
+    image: data.image || null,
+    imageCredit: data.image_credit || null,
+    readTime: readTimeFor(content),
     html: marked.parse(content),
   };
 });
 
-// Sort newest first
 articles.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-// Build each article page
+// ---------- Article pages ----------
 for (const a of articles) {
-  const body = `<div class="wrap">
+  const heroImg = a.image
+    ? `<div class="article-hero-image" style="background-image:url('${a.image}')"></div>`
+    : "";
+  const credit = a.imageCredit ? `<div class="photo-credit">${a.imageCredit}</div>` : "";
+  const body = `<div class="wrap-narrow">
   <div class="article-header">
     <div class="eyebrow">${a.category}</div>
     <h1>${a.title}</h1>
-    <div class="meta">${a.date}</div>
+    <div class="meta">${a.readTime} &middot; ${a.date}</div>
   </div>
+  ${heroImg}
+  ${credit}
   <article class="body">
     ${a.html}
     <p class="disclosure-note">As an Amazon Associate, this site earns from qualifying purchases made through links above, at no extra cost to you. See our <a href="about.html">full disclosure</a>.</p>
   </article>
 </div>`;
-  const html = pageShell({
-    title: `${a.title} — ${SITE_NAME}`,
-    description: a.excerpt,
-    bodyHtml: body,
-  });
-  fs.writeFileSync(path.join(DOCS_ARTICLES_DIR, `${a.slug}.html`), html);
+  fs.writeFileSync(
+    path.join(DOCS_ARTICLES_DIR, `${a.slug}.html`),
+    pageShell({ title: `${a.title} — ${SITE_NAME}`, description: a.excerpt, bodyHtml: body })
+  );
 }
 
-// Build index page
-const cardsHtml = articles.map(articleCard).join("\n");
-const indexBody = `<div class="wrap">
-  <div style="padding: 40px 0 10px;">
-    <h1 style="font-family: var(--font-display); font-size: 1.5rem; margin: 0 0 6px;">${SITE_NAME}</h1>
-    <p style="color:#555; max-width: 60ch;">${SITE_TAGLINE}</p>
+// ---------- Homepage ----------
+const [featured, ...rest] = articles;
+const gridArticles = rest.slice(0, 8);
+const sidebarArticles = articles.slice(0, 5);
+
+const categoryCounts = {};
+for (const a of articles) {
+  categoryCounts[a.category] = (categoryCounts[a.category] || 0) + 1;
+}
+const categoryStripHtml = Object.entries(categoryCounts)
+  .map(
+    ([cat, count]) =>
+      `<a href="index.html">${cat}<span class="count">${count} guide${count === 1 ? "" : "s"}</span></a>`
+  )
+  .join("\n");
+
+const heroHtml = featured
+  ? `<div class="hero">
+  <div class="hero-content">
+    <div class="hero-tag">${featured.category}</div>
+    <h1>${featured.title}</h1>
+    <p class="excerpt">${featured.excerpt}</p>
+    <div class="hero-meta"><span>${featured.readTime}</span><span>${featured.date}</span></div>
+    <a class="btn-primary" href="articles/${featured.slug}.html">Read the Guide &rarr;</a>
   </div>
-  <div class="dimline">Latest guides</div>
-  ${cardsHtml || "<p>New guides publish weekly. Check back soon.</p>"}
+  <div class="hero-image ${featured.image ? "" : "no-photo"}" ${
+      featured.image ? `style="background-image:url('${featured.image}')"` : ""
+    }></div>
+</div>`
+  : "";
+
+const gridHtml = gridArticles.map(articleCard).join("\n");
+const sidebarHtml = sidebarArticles.map(sidebarItem).join("\n");
+
+const indexBody = `<div class="wrap">
+  <div style="padding: 32px 0 4px;">
+    <p style="color:var(--text-dim); max-width: 60ch; margin:0;">${SITE_TAGLINE}</p>
+  </div>
+  ${heroHtml}
+  <div class="page-grid">
+    <div>
+      <div class="section-head"><h2>Latest Guides</h2></div>
+      <div class="card-grid">
+        ${gridHtml || '<p style="color:var(--text-faint)">New guides publish twice daily. Check back soon.</p>'}
+      </div>
+      <div id="no-results" class="no-results">No guides match your search.</div>
+    </div>
+    <div>
+      <div class="sidebar-box">
+        <div class="section-head" style="margin-bottom:12px;"><h2>Latest Guides</h2></div>
+        ${sidebarHtml}
+      </div>
+    </div>
+  </div>
+  <div class="category-strip">
+    ${categoryStripHtml}
+  </div>
 </div>`;
+
 fs.writeFileSync(
   path.join(DOCS_DIR, "index.html"),
-  pageShell({ title: SITE_NAME, description: SITE_TAGLINE, bodyHtml: indexBody })
+  pageShell({
+    title: SITE_NAME,
+    description: SITE_TAGLINE,
+    bodyHtml: indexBody,
+    extraScript: searchScript,
+  })
 );
 
-// Build about/disclosure page
-const aboutBody = `<div class="wrap">
+// ---------- About page ----------
+const aboutBody = `<div class="wrap-narrow">
   <div class="article-header">
     <div class="eyebrow">About</div>
     <h1>About &amp; Affiliate Disclosure</h1>
@@ -94,7 +164,7 @@ fs.writeFileSync(
   pageShell({ title: `About — ${SITE_NAME}`, description: "About and affiliate disclosure", bodyHtml: aboutBody })
 );
 
-// robots.txt + sitemap.xml
+// ---------- robots.txt + sitemap.xml ----------
 fs.writeFileSync(path.join(DOCS_DIR, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${SITE_URL}/sitemap.xml\n`);
 
 const urls = [

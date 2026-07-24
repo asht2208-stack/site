@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import matter from "gray-matter";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -155,9 +156,30 @@ Requirements:
   const title = titleMatch ? titleMatch[1] : topic;
   const slug = slugify(title);
 
+  // Use a real, human-verified product photo if this article ended up
+  // recommending exactly one product that has one on file. If not, no
+  // photo is used for this article — no stock/generic image fallback.
+  const referencedProducts = products.filter((p) => articleMd.includes(p.url));
+  let image = null;
+  if (referencedProducts.length === 1 && referencedProducts[0].image) {
+    console.log(`Using the real product photo for: ${referencedProducts[0].name}`);
+    image = {
+      url: referencedProducts[0].image,
+      credit: referencedProducts[0].image_credit || "",
+    };
+  }
+
+  let finalMd = articleMd.trim() + "\n";
+  if (image) {
+    const parsed = matter(finalMd);
+    parsed.data.image = image.url;
+    if (image.credit) parsed.data.image_credit = image.credit;
+    finalMd = matter.stringify(parsed.content, parsed.data);
+  }
+
   fs.mkdirSync(ARTICLES_DIR, { recursive: true });
-  fs.writeFileSync(path.join(ARTICLES_DIR, `${slug}.md`), articleMd.trim() + "\n");
-  console.log(`Wrote content/articles/${slug}.md`);
+  fs.writeFileSync(path.join(ARTICLES_DIR, `${slug}.md`), finalMd);
+  console.log(`Wrote content/articles/${slug}.md${image ? " (with real product photo)" : " (no photo — no matching product image on file)"}`);
 }
 
 main().catch((err) => {

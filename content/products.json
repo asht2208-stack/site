@@ -1,5 +1,5 @@
 {
-  "_instructions": "This is the ONLY source of truth for products the AI is allowed to recommend. Add a real Amazon product here (with your real affiliate tag in the url) before the generator can write about it. This keeps content accurate and links working — the one part of this pipeline that stays a manual, ~5-minute-a-week task. Replace YOURTAG-20 with your real Amazon Associates tracking ID.",
+  "_instructions": "This is the ONLY source of truth for products the AI is allowed to recommend. Add a real Amazon product here (with your real affiliate tag in the url) before the generator can write about it. This keeps content accurate and links working — the one part of this pipeline that stays a manual, ~5-minute-a-week task. Replace YOURTAG-20 with your real Amazon Associates tracking ID. OPTIONAL: while you're on the product's Amazon page verifying price/specs, you can also right-click its main photo -> 'Copy image address' and paste that URL into the optional 'image' field below. When you do, articles recommending that specific product will use the real product photo. If you skip it, that article will simply show no photo (a plain placeholder) — there is no generic stock photo fallback, only real verified product photos are used.",
   "products": [
     {
       "id": "monomi-compact-standing-desk",
@@ -8,7 +8,8 @@
       "footprint": "35in x 20in one-piece desktop, height adjustable 28.3in-46.5in, fits against a wall in a small bedroom or corner",
       "price_range": "$125-$140",
       "key_specs": ["electric height adjust 28.3in-46.5in", "anti-collision safety system", "3 memory height presets", "fits a dual-monitor setup or laptop plus monitor", "under 30 minute single-person assembly"],
-      "url": "https://www.amazon.com/dp/B0GSVK5S35?tag=compactoffi0a-20"
+      "url": "https://www.amazon.com/dp/B0GSVK5S35?tag=compactoffi0a-20",
+      "image": ""
     }
   ]
 }
