@@ -1,7 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(new URL(".", import.meta.url).pathname, "..");
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, "..");
 const PRODUCTS_PATH = path.join(ROOT, "content/products.json");
 const ARTICLES_DIR = path.join(ROOT, "content/articles");
 const TOPICS_PATH = path.join(ROOT, "content/topics.txt");

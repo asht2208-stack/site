@@ -1,10 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import matter from "gray-matter";
 import { marked } from "marked";
 import { pageShell, articleCard, SITE_NAME, SITE_TAGLINE, SITE_URL } from "../templates/layout.js";
 
-const ROOT = path.resolve(new URL(".", import.meta.url).pathname, "..");
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, "..");
 const ARTICLES_DIR = path.join(ROOT, "content/articles");
 const DOCS_DIR = path.join(ROOT, "docs");
 const DOCS_ARTICLES_DIR = path.join(DOCS_DIR, "articles");
@@ -46,7 +48,7 @@ for (const a of articles) {
   </div>
   <article class="body">
     ${a.html}
-    <p class="disclosure-note">As an Amazon Associate, this site earns from qualifying purchases made through links above, at no extra cost to you. See our <a href="/about.html">full disclosure</a>.</p>
+    <p class="disclosure-note">As an Amazon Associate, this site earns from qualifying purchases made through links above, at no extra cost to you. See our <a href="about.html">full disclosure</a>.</p>
   </article>
 </div>`;
   const html = pageShell({
