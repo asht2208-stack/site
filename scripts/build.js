@@ -19,10 +19,35 @@ const ARTICLES_DIR = path.join(ROOT, "content/articles");
 const DOCS_DIR = path.join(ROOT, "docs");
 const DOCS_ARTICLES_DIR = path.join(DOCS_DIR, "articles");
 const AI_IMAGE_DIR = path.join(DOCS_DIR, "images", "ai");
+const PRODUCTS_PATH = path.join(ROOT, "content/products.json");
 
 fs.mkdirSync(DOCS_ARTICLES_DIR, { recursive: true });
 fs.mkdirSync(AI_IMAGE_DIR, { recursive: true });
 fs.copyFileSync(path.join(ROOT, "templates/style.css"), path.join(DOCS_DIR, "style.css"));
+
+// ---------- Shop Our Picks (always real products, straight from products.json) ----------
+const productsData = fs.existsSync(PRODUCTS_PATH)
+  ? JSON.parse(fs.readFileSync(PRODUCTS_PATH, "utf-8"))
+  : { products: [] };
+
+function shopPicksHtml(products) {
+  if (!products.length) return "";
+  const items = products
+    .map(
+      (p) => `<div class="shop-pick-item">
+  <div class="shop-pick-name">${p.name}</div>
+  <div class="shop-pick-price">${p.price_range || ""}</div>
+  <a class="shop-pick-buy" href="${p.url}" rel="nofollow sponsored" target="_blank">Check price on Amazon</a>
+</div>`
+    )
+    .join("\n");
+  return `<div class="sidebar-box shop-picks">
+  <div class="section-head" style="margin-bottom:12px;"><h2>Shop Our Picks</h2></div>
+  ${items}
+</div>`;
+}
+
+const shopPicksBlock = shopPicksHtml(productsData.products || []);
 
 function readTimeFor(markdown) {
   const words = markdown.trim().split(/\s+/).length;
@@ -153,6 +178,7 @@ for (const a of articles) {
     ${a.html}
     <p class="disclosure-note">As an Amazon Associate, this site earns from qualifying purchases made through links above, at no extra cost to you. See our <a href="about.html">full disclosure</a>.</p>
   </article>
+  ${shopPicksBlock}
 </div>`;
   fs.writeFileSync(
     path.join(DOCS_ARTICLES_DIR, `${a.slug}.html`),
@@ -212,6 +238,7 @@ const indexBody = `<div class="wrap">
         <div class="section-head" style="margin-bottom:12px;"><h2>Trending Now</h2></div>
         ${sidebarHtml}
       </div>
+      ${shopPicksBlock}
     </div>
   </div>
   <div class="category-strip">

@@ -137,13 +137,14 @@ date: "${new Date().toISOString().slice(0, 10)}"
 Requirements:
 - 700-1000 words, USA audience, practical and specific to small spaces.
 - Use H2 sections.
-- When recommending a specific product from the list above, insert this exact HTML block (fill in the values from the matching product):
+- When recommending a specific product from the list above, insert this exact HTML block once, at the point where you first introduce it (fill in the values from the matching product):
 <div class="pick">
   <div class="label">Recommended pick</div>
   <div class="name">PRODUCT NAME</div>
   <p>One or two sentences on why it fits, using only the specs given.</p>
   <a class="buy" href="PRODUCT URL" rel="nofollow sponsored" target="_blank">Check price on Amazon</a>
 </div>
+- After that block, you will likely mention the product's name again naturally in later paragraphs (e.g. "The Monomi desk stands out because..."). Whenever you do, write that mention as an inline HTML link to the exact same product URL, in exactly this form: <a href="PRODUCT URL" rel="nofollow sponsored" target="_blank">Monomi Small Electric Standing Desk</a>. Do this for genuine, naturally-occurring mentions only — do not add extra sentences or paragraphs just to create more links, and do not link generic words like "desk" or "it," only the actual product name.
 - Do not make medical, legal, or guaranteed-outcome claims.
 - Do not fabricate reviews, ratings, or sales figures.
 - If none of the provided products genuinely fit this topic, say so plainly in the article rather than forcing a mismatched recommendation.

@@ -539,6 +539,48 @@ p{ margin:0 0 1em; color:var(--text-dim); }
   background:#5eead4;
 }
 
+/* ---------- Shop Our Picks module (sidebar + end of articles) ---------- */
+
+.shop-picks{
+  margin-top:20px;
+}
+
+.shop-pick-item{
+  padding:14px 0;
+  border-bottom:1px solid var(--border);
+}
+
+.shop-pick-item:last-child{ border-bottom:none; }
+
+.shop-pick-name{
+  font-size:.92rem;
+  font-weight:600;
+  color:var(--text);
+  margin-bottom:4px;
+}
+
+.shop-pick-price{
+  font-size:.82rem;
+  color:var(--text-faint);
+  margin-bottom:10px;
+}
+
+.shop-pick-buy{
+  display:inline-block;
+  background:var(--accent);
+  color:#04222a;
+  font-weight:700;
+  font-size:.82rem;
+  text-decoration:none;
+  padding:8px 16px;
+  border-radius:7px;
+  transition:.2s;
+}
+
+.shop-pick-buy:hover{
+  background:#5eead4;
+}
+
 /* ---------- Footer ---------- */
 
 .site-footer{
