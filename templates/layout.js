@@ -1,5 +1,5 @@
 export const SITE_NAME = "The Compact Office";
-export const SITE_TAGLINE = "Small-footprint home office setups, reviewed for people who don't have a spare room.";
+export const SITE_TAGLINE = "Smart Workspace Reviews";
 export const SITE_URL = "https://asht2208-stack.github.io/site";
 
 function head(title, description) {
@@ -9,25 +9,40 @@ function head(title, description) {
 <meta name="description" content="${description}">
 <base href="${SITE_URL}/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">`;
 }
 
 function header() {
   return `<header class="site-header">
-  <div class="wrap row">
-    <a class="brand" href="index.html">[<span class="bracket">${SITE_NAME}</span>]</a>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="index.html">Guides</a>
-      <a href="about.html">About</a>
-    </nav>
-    <div class="header-search">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input id="site-search" type="text" placeholder="Search guides...">
+    <div class="wrap navbar">
+
+      <a class="brand" href="index.html">
+        <span class="brand-title">${SITE_NAME}</span>
+        <span class="brand-tagline">${SITE_TAGLINE}</span>
+      </a>
+
+      <nav class="main-nav">
+        <a href="index.html">Home</a>
+        <a href="index.html">Buying Guides</a>
+        <a href="index.html">Setup Tips</a>
+        <a href="about.html">About</a>
+      </nav>
+
+      <div class="header-search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+
+        <input
+          id="site-search"
+          type="text"
+          placeholder="Search guides...">
+      </div>
+
     </div>
-  </div>
-</header>`;
+  </header>`;
 }
 
 function footer() {
@@ -83,9 +98,12 @@ export const searchScript = `<script>
 (function() {
   const input = document.getElementById('site-search');
   if (!input) return;
+
   const cards = Array.from(document.querySelectorAll('[data-search-title]'));
+
   input.addEventListener('input', function() {
     const q = input.value.trim().toLowerCase();
+
     cards.forEach(function(card) {
       const match = card.getAttribute('data-search-title').includes(q);
       card.style.display = match ? '' : 'none';
