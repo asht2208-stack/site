@@ -49,7 +49,7 @@ function aiPromptFor(category, title) {
 async function generateAiImage(prompt, destPath) {
   const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=800&height=450&nologo=true`;
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 25000);
+  const timeout = setTimeout(() => controller.abort(), 40000);
   try {
     const res = await fetch(url, { signal: controller.signal });
     if (!res.ok) throw new Error(`status ${res.status}`);
@@ -62,6 +62,10 @@ async function generateAiImage(prompt, destPath) {
   } finally {
     clearTimeout(timeout);
   }
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 const files = fs.existsSync(ARTICLES_DIR)
@@ -89,22 +93,36 @@ const articles = files.map((file) => {
 articles.sort((a, b) => new Date(b.date) - new Date(a.date));
 
 // Fill in AI reference images for any article without a real photo.
-// Runs sequentially (not in parallel) to stay well under Pollinations'
-// anonymous rate limit (~1 request per 15 seconds).
+// Runs sequentially with a delay between requests to stay under
+// Pollinations' anonymous rate limit (~1 request per 15 seconds),
+// with one retry (after a longer wait) if a request gets rate-limited.
 for (const a of articles) {
   if (a.image) continue;
   const destPath = path.join(AI_IMAGE_DIR, `${a.slug}.jpg`);
   const relPath = `images/ai/${a.slug}.jpg`;
   if (fs.existsSync(destPath)) {
+    // Already generated in a previous run — reuse it, don't regenerate.
     a.image = relPath;
     a.imageIsAI = true;
     continue;
   }
-  const ok = await generateAiImage(aiPromptFor(a.category, a.title), destPath);
+
+  const prompt = aiPromptFor(a.category, a.title);
+  let ok = await generateAiImage(prompt, destPath);
+
+  if (!ok) {
+    console.log("Retrying after rate-limit cooldown...");
+    await sleep(20000);
+    ok = await generateAiImage(prompt, destPath);
+  }
+
   if (ok) {
     a.image = relPath;
     a.imageIsAI = true;
   }
+
+  // Space out requests so the next article doesn't get rate-limited either.
+  await sleep(17000);
 }
 
 function aiBadge(isAI) {
