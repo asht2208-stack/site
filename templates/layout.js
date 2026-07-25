@@ -72,9 +72,15 @@ function thumbStyle(image) {
   return image ? `style="background-image:url('${image}')"` : "";
 }
 
-export function articleCard({ slug, title, excerpt, date, category, readTime, image }) {
+function aiBadgeSmall(isAI) {
+  return isAI
+    ? `<div class="ai-badge ai-badge-sm" title="AI-generated reference image — not an actual product photo">AI ref</div>`
+    : "";
+}
+
+export function articleCard({ slug, title, excerpt, date, category, readTime, image, imageIsAI }) {
   return `<div class="article-card" data-search-title="${title.toLowerCase()}">
-  <div class="thumb ${image ? "" : "no-photo"}" ${thumbStyle(image)}></div>
+  <div class="thumb ${image ? "" : "no-photo"}" ${thumbStyle(image)}>${aiBadgeSmall(imageIsAI)}</div>
   <div class="card-body">
     <div class="eyebrow">${category || "Guide"}</div>
     <h3><a href="articles/${slug}.html">${title}</a></h3>
@@ -84,9 +90,9 @@ export function articleCard({ slug, title, excerpt, date, category, readTime, im
 </div>`;
 }
 
-export function sidebarItem({ slug, title, date, readTime, image }) {
+export function sidebarItem({ slug, title, date, readTime, image, imageIsAI }) {
   return `<div class="sidebar-item">
-  <div class="thumb ${image ? "" : "no-photo"}" ${thumbStyle(image)}></div>
+  <div class="thumb ${image ? "" : "no-photo"}" ${thumbStyle(image)}>${aiBadgeSmall(imageIsAI)}</div>
   <div>
     <h4><a href="articles/${slug}.html">${title}</a></h4>
     <div class="meta">${readTime} &middot; ${date}</div>

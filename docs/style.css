@@ -182,10 +182,12 @@ p{ margin:0 0 1em; color:var(--text-dim); }
 
 .hero-image{
   min-height:280px;
+  position:relative;
   background:
     radial-gradient(circle at 30% 20%, rgba(34,211,238,.25), transparent 55%),
     linear-gradient(135deg, #1a2230 0%, #0e1116 100%);
-  position:relative;
+  background-size:cover;
+  background-position:center;
 }
 
 .hero-image.no-photo::after{
@@ -200,11 +202,36 @@ p{ margin:0 0 1em; color:var(--text-dim); }
 
 .article-hero-image{
   min-height:260px;
+  position:relative;
   border-radius:var(--radius);
   background:
     radial-gradient(circle at 70% 30%, rgba(34,211,238,.18), transparent 55%),
     linear-gradient(135deg, #1a2230 0%, #0e1116 100%);
+  background-size:cover;
+  background-position:center;
   margin:24px 0;
+}
+
+.ai-badge{
+  position:absolute;
+  right:12px;
+  bottom:12px;
+  background:rgba(14,17,22,.85);
+  border:1px solid rgba(34,211,238,.5);
+  color:var(--accent);
+  font-size:.7rem;
+  font-weight:600;
+  padding:5px 10px;
+  border-radius:6px;
+  letter-spacing:.02em;
+  backdrop-filter:blur(2px);
+}
+
+.ai-badge-sm{
+  right:8px;
+  bottom:8px;
+  font-size:.62rem;
+  padding:3px 7px;
 }
 
 .photo-credit{
@@ -278,11 +305,35 @@ p{ margin:0 0 1em; color:var(--text-dim); }
 
 .thumb{
   height:140px;
+  position:relative;
   background:
-    radial-gradient(circle at 25% 25%, rgba(34,211,238,.20), transparent 60%),
-    linear-gradient(135deg, #1a2230 0%, #0e1116 100%);
+    radial-gradient(circle at 22% 22%, rgba(34,211,238,.32), transparent 55%),
+    linear-gradient(135deg, #1c2634 0%, #0b0d11 100%);
   background-size:cover;
   background-position:center;
+  overflow:hidden;
+}
+
+.thumb.no-photo::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+  background-size:22px 22px;
+}
+
+.thumb.no-photo::after{
+  content:"";
+  position:absolute;
+  right:16px;
+  bottom:14px;
+  width:34px;
+  height:34px;
+  border-radius:8px;
+  border:1.5px solid rgba(34,211,238,.45);
+  background:rgba(34,211,238,.08);
 }
 
 .card-body{
