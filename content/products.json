@@ -10,6 +10,46 @@
       "key_specs": ["electric height adjust 28.3in-46.5in", "anti-collision safety system", "3 memory height presets", "fits a dual-monitor setup or laptop plus monitor", "under 30 minute single-person assembly"],
       "url": "https://www.amazon.com/dp/B0GSVK5S35?tag=compactoffi0a-20",
       "image": ""
+    },
+    {
+      "id": "superdanny-power-strip",
+      "name": "SUPERDANNY Extension Cord, Flat Plug Surge Protector Power Strip, 10Ft, 8 AC & 4 USB Ports (2 USB C)",
+      "category": "power strip",
+      "footprint": "flat ultra-thin plug (0.3in) fits behind furniture, 10ft cord, wall or desk mountable",
+      "price_range": "$12.98",
+      "key_specs": ["8 AC outlets", "4 USB ports (2 USB-C, 15W total)", "1050 Joules surge protection", "45-degree angled flat plug", "wall/desk mountable"],
+      "url": "https://amzn.to/4w0rNCE",
+      "image": ""
+    },
+    {
+      "id": "bftou-monitor-arm",
+      "name": "BFTOU Black Single Monitor Arm Adjustable Stand Monitor Mount, up to 32 inches and 17.6 lbs",
+      "category": "monitor arm",
+      "footprint": "clamp or grommet base, fits desks 0.4in-3in thick, frees up desk surface space",
+      "price_range": "$19.98",
+      "key_specs": ["fits 13\"-32\" screens up to 17.6 lbs", "full-motion tilt/swivel/rotate", "VESA 75x75mm or 100x100mm", "built-in cable routing", "~10 min assembly"],
+      "url": "https://amzn.to/3RyK5fN",
+      "image": ""
+    },
+    {
+      "id": "mimoglad-office-chair",
+      "name": "Mimoglad Office Chair, High Back Ergonomic Desk Chair with Adjustable Lumbar Support and Headrest (Modern, Black)",
+      "category": "office chair",
+      "footprint": "26.37in D x 26.37in W x 49.8in H, flip-up armrests save space in tight corners",
+      "price_range": "$149.99",
+      "key_specs": ["adjustable lumbar support and headrest", "breathable mesh back", "reclining function", "flip-up armrests", "supports up to 300 lbs", "5-year warranty"],
+      "url": "https://amzn.to/44PJlWM",
+      "image": ""
+    },
+    {
+      "id": "ergalithic-office-chair",
+      "name": "Ergalithic Office Chair, 330LBS Mesh Ergonomic Desk Chair with 3D Lumbar Support and Swivel (Black)",
+      "category": "office chair",
+      "footprint": "flip-up armrests to tuck under any desk, compact for small rooms",
+      "price_range": "$99.99",
+      "key_specs": ["adjustable 3D lumbar pillow", "90-120 degree rocking with lock", "4in height adjustment", "5-point base supports up to 330 lbs", "5-year warranty"],
+      "url": "https://amzn.to/44OIuWu",
+      "image": ""
     }
   ]
 }
