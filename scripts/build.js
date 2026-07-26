@@ -24,11 +24,12 @@ const AI_IMAGE_DIR = path.join(DOCS_DIR, "images", "ai");
 const PRODUCTS_PATH = path.join(ROOT, "content/products.json");
 const CATEGORIES_PATH = path.join(ROOT, "content/categories.json");
 
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
 fs.mkdirSync(DOCS_ARTICLES_DIR, { recursive: true });
 fs.mkdirSync(AI_IMAGE_DIR, { recursive: true });
 fs.copyFileSync(path.join(ROOT, "templates/style.css"), path.join(DOCS_DIR, "style.css"));
 
-// ---------- Products + categories (source of truth) ----------
 const productsData = fs.existsSync(PRODUCTS_PATH)
   ? JSON.parse(fs.readFileSync(PRODUCTS_PATH, "utf-8"))
   : { products: [] };
@@ -37,7 +38,19 @@ const categoriesData = fs.existsSync(CATEGORIES_PATH)
   ? JSON.parse(fs.readFileSync(CATEGORIES_PATH, "utf-8"))
   : { categories: [] };
 
-const categories = categoriesData.categories || [];
+const allCategories = categoriesData.categories || [];
+
+function productsForCategory(slug) {
+  return (productsData.products || []).filter((p) => p.category_slug === slug);
+}
+
+function categoriesWithContent(articles) {
+  return allCategories.filter((cat) => {
+    const hasProducts = productsForCategory(cat.slug).length > 0;
+    const hasArticles = articles.some((a) => a.shopCategory === cat.slug);
+    return hasProducts || hasArticles;
+  });
+}
 
 function shopPicksHtml(products) {
   if (!products.length) return "";
@@ -58,7 +71,6 @@ function shopPicksHtml(products) {
 
 const shopPicksBlock = shopPicksHtml(productsData.products || []);
 
-// ---------- Coming soon teaser (public, reader-facing, no internal notes) ----------
 const PENDING_PATH = path.join(ROOT, "content/products-pending.json");
 const pendingData = fs.existsSync(PENDING_PATH)
   ? JSON.parse(fs.readFileSync(PENDING_PATH, "utf-8"))
@@ -73,34 +85,63 @@ function readTimeFor(markdown) {
   return `${Math.max(1, Math.round(words / 200))} min read`;
 }
 
-// ---------- AI reference image generation (Pollinations, free, no key) ----------
-// IMPORTANT: prompts are deliberately generic/topical (category + subject only).
-// They never reference a specific brand or model, since these are disclosed
-// "reference illustrations," not depictions of any real product.
-function aiPromptFor(category, title, imageSubject) {
-  const subject =
-    imageSubject ||
-    title
-      .replace(/[^\w\s]/g, "")
-      .split(" ")
-      .slice(0, 6)
-      .join(" ");
+const COMPOSITION_VARIANTS = [
+  "shot from a slightly elevated three-quarter angle",
+  "shot straight-on at eye level",
+  "shot from a low angle looking slightly upward",
+  "shot from above looking down at the desk surface",
+  "shot from the side in profile",
+  "shot from a wide angle showing the surrounding room",
+];
+
+function seedFromString(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash * 31 + str.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+function aiPromptFor(category, subject, variationKey) {
+  const safeSubject = subject || category;
+  const variant = COMPOSITION_VARIANTS[seedFromString(variationKey) % COMPOSITION_VARIANTS.length];
   return (
-    `minimalist editorial photograph, ${category.toLowerCase()}, ${subject}, ` +
-    `small modern home office, clean tidy desk setup, soft natural light, ` +
-    `neutral tones, no text, no logos, no brand names, no people`
+    `A minimalist editorial photograph of a ${category.toLowerCase()}: ${safeSubject}. ` +
+    `${variant}. Small modern home office setting, clean tidy desk, soft natural window light, ` +
+    `neutral warm tones, photorealistic, no text, no logos, no brand names, no people, no watermarks.`
   );
 }
 
-async function generateAiImage(prompt, destPath) {
-  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=800&height=450&nologo=true`;
+async function generateAiImageGemini(prompt, destPath) {
+  if (!GEMINI_API_KEY) {
+    console.warn("GEMINI_API_KEY not set — skipping AI image generation.");
+    return false;
+  }
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 40000);
+  const timeout = setTimeout(() => controller.abort(), 60000);
   try {
-    const res = await fetch(url, { signal: controller.signal });
-    if (!res.ok) throw new Error(`status ${res.status}`);
-    const buffer = Buffer.from(await res.arrayBuffer());
+    const res = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent",
+      {
+        method: "POST",
+        signal: controller.signal,
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": GEMINI_API_KEY,
+        },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+        }),
+      }
+    );
+    if (!res.ok) throw new Error(`status ${res.status}: ${await res.text()}`);
+    const data = await res.json();
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    const imagePart = parts.find((p) => p.inlineData?.data);
+    if (!imagePart) throw new Error("no image data in response");
+    const buffer = Buffer.from(imagePart.inlineData.data, "base64");
     fs.writeFileSync(destPath, buffer);
+    console.log(`Generated AI image: ${destPath}`);
     return true;
   } catch (err) {
     console.warn(`AI image generation skipped (${err.message}) for prompt: ${prompt}`);
@@ -112,6 +153,18 @@ async function generateAiImage(prompt, destPath) {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function ensureImage(prompt, destPath) {
+  if (fs.existsSync(destPath)) return true;
+  let ok = await generateAiImageGemini(prompt, destPath);
+  if (!ok) {
+    console.log("Retrying after a short cooldown...");
+    await sleep(15000);
+    ok = await generateAiImageGemini(prompt, destPath);
+  }
+  await sleep(6000);
+  return ok;
 }
 
 const files = fs.existsSync(ARTICLES_DIR)
@@ -130,10 +183,12 @@ const articles = files.map((file) => {
     shopCategory: data.shop_category || null,
     imageSubject: data.image_subject || null,
     format: data.format || "review",
+    compareProducts: data.compare_products || null,
     date: data.date || "",
     image: data.image || null,
     imageCredit: data.image_credit || null,
     imageIsAI: false,
+    compareImages: null,
     readTime: readTimeFor(content),
     html: marked.parse(content),
   };
@@ -141,37 +196,36 @@ const articles = files.map((file) => {
 
 articles.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-// Fill in AI reference images for any article without a real photo.
-// Runs sequentially with a delay between requests to stay under
-// Pollinations' anonymous rate limit (~1 request per 15 seconds),
-// with one retry (after a longer wait) if a request gets rate-limited.
+const categories = categoriesWithContent(articles);
+
 for (const a of articles) {
   if (a.image) continue;
-  const destPath = path.join(AI_IMAGE_DIR, `${a.slug}.jpg`);
-  const relPath = `images/ai/${a.slug}.jpg`;
-  if (fs.existsSync(destPath)) {
-    // Already generated in a previous run — reuse it, don't regenerate.
-    a.image = relPath;
+
+  if (a.format === "comparison" && a.compareProducts && a.compareProducts.length === 2) {
+    const [p1, p2] = a.compareProducts;
+    const path1 = path.join(AI_IMAGE_DIR, `${a.slug}-a.jpg`);
+    const path2 = path.join(AI_IMAGE_DIR, `${a.slug}-b.jpg`);
+    const rel1 = `images/ai/${a.slug}-a.jpg`;
+    const rel2 = `images/ai/${a.slug}-b.jpg`;
+
+    const ok1 = await ensureImage(aiPromptFor(p1.category, p1.name, a.slug + "-a"), path1);
+    const ok2 = await ensureImage(aiPromptFor(p2.category, p2.name, a.slug + "-b"), path2);
+
+    a.compareImages = [
+      { src: ok1 ? rel1 : null, name: p1.name },
+      { src: ok2 ? rel2 : null, name: p2.name },
+    ];
     a.imageIsAI = true;
     continue;
   }
 
-  const prompt = aiPromptFor(a.category, a.title, a.imageSubject);
-  let ok = await generateAiImage(prompt, destPath);
-
-  if (!ok) {
-    console.log("Retrying after rate-limit cooldown...");
-    await sleep(20000);
-    ok = await generateAiImage(prompt, destPath);
-  }
-
+  const destPath = path.join(AI_IMAGE_DIR, `${a.slug}.jpg`);
+  const relPath = `images/ai/${a.slug}.jpg`;
+  const ok = await ensureImage(aiPromptFor(a.category, a.imageSubject || a.title, a.slug), destPath);
   if (ok) {
     a.image = relPath;
     a.imageIsAI = true;
   }
-
-  // Space out requests so the next article doesn't get rate-limited either.
-  await sleep(17000);
 }
 
 function aiBadge(isAI) {
@@ -180,16 +234,44 @@ function aiBadge(isAI) {
     : "";
 }
 
-// ---------- Article pages ----------
+function aiBadgeSm(isAI) {
+  return isAI
+    ? `<div class="ai-badge ai-badge-sm" title="AI-generated reference image — not an actual product photo">AI ref</div>`
+    : "";
+}
+
+function vsCompareHtml(a) {
+  if (!a.compareImages) return "";
+  const [left, right] = a.compareImages;
+  const side = (item) => `<div class="vs-item ${item.src ? "" : "no-photo"}" ${
+    item.src ? `style="background-image:url('${item.src}')"` : ""
+  }>
+    ${aiBadgeSm(true)}
+    <div class="vs-caption">${item.name}</div>
+  </div>`;
+  return `<div class="vs-compare">
+  ${side(left)}
+  <div class="vs-badge">VS</div>
+  ${side(right)}
+</div>
+<div class="photo-credit">Reference images generated by AI for illustration only. See the Amazon listings via the buy links below for actual product photos.</div>`;
+}
+
 for (const a of articles) {
-  const heroImg = a.image
-    ? `<div class="article-hero-image" style="background-image:url('${a.image}')">${aiBadge(a.imageIsAI)}</div>`
-    : "";
-  const credit = a.imageCredit
-    ? `<div class="photo-credit">${a.imageCredit}</div>`
-    : a.imageIsAI
-    ? `<div class="photo-credit">Reference image generated by AI for illustration only. See the Amazon listing via the buy link above for actual product photos.</div>`
-    : "";
+  let heroImg = "";
+  let credit = "";
+
+  if (a.compareImages) {
+    heroImg = vsCompareHtml(a);
+  } else if (a.image) {
+    heroImg = `<div class="article-hero-image" style="background-image:url('${a.image}')">${aiBadge(a.imageIsAI)}</div>`;
+    credit = a.imageCredit
+      ? `<div class="photo-credit">${a.imageCredit}</div>`
+      : a.imageIsAI
+      ? `<div class="photo-credit">Reference image generated by AI for illustration only. See the Amazon listing via the buy link above for actual product photos.</div>`
+      : "";
+  }
+
   const body = `<div class="wrap-narrow">
   <div class="article-header">
     <div class="eyebrow">${a.category}</div>
@@ -212,13 +294,9 @@ for (const a of articles) {
       bodyHtml: body,
       comingSoonText,
       categories,
+      activeCategory: a.shopCategory,
     })
   );
-}
-
-// ---------- Category pages ----------
-function productsForCategory(slug) {
-  return (productsData.products || []).filter((p) => p.category_slug === slug);
 }
 
 function articlesForCategory(slug) {
@@ -260,8 +338,7 @@ function categoryPageHtml(cat) {
     ? `<div class="card-grid">${arts.map((a) => articleCard(a)).join("\n")}</div>`
     : `<p style="color:var(--text-faint)">No guides in this category yet. Check back soon.</p>`;
 
-  const body = `<div class="wrap">
-  <div class="article-header" style="padding-top:32px;">
+  const body = `<div class="article-header" style="padding-top:32px;">
     <div class="eyebrow">Category</div>
     <h1>${cat.name}</h1>
   </div>
@@ -273,8 +350,7 @@ function categoryPageHtml(cat) {
     <div>
       ${subcatHtml || '<p style="color:var(--text-faint)">Products coming soon.</p>'}
     </div>
-  </div>
-</div>`;
+  </div>`;
 
   return pageShell({
     title: `${cat.name} — ${SITE_NAME}`,
@@ -282,6 +358,7 @@ function categoryPageHtml(cat) {
     bodyHtml: body,
     comingSoonText,
     categories,
+    activeCategory: cat.slug,
   });
 }
 
@@ -289,7 +366,6 @@ for (const cat of categories) {
   fs.writeFileSync(path.join(DOCS_DIR, `category-${cat.slug}.html`), categoryPageHtml(cat));
 }
 
-// ---------- Homepage ----------
 const [featured, ...rest] = articles;
 const gridArticles = rest.slice(0, 8);
 const sidebarArticles = articles.slice(0, 5);
@@ -312,15 +388,14 @@ const heroHtml = featured
   </div>
   <div class="hero-image ${featured.image ? "" : "no-photo"}" ${
       featured.image ? `style="background-image:url('${featured.image}')"` : ""
-    }>${aiBadge(featured.imageIsAI)}</div>
+    }>${aiBadge(featured.imageIsAI && !!featured.image)}</div>
 </div>`
   : "";
 
 const gridHtml = gridArticles.map((a) => articleCard(a)).join("\n");
 const sidebarHtml = sidebarArticles.map((a) => sidebarItem(a)).join("\n");
 
-const indexBody = `<div class="wrap">
-  <div style="padding: 32px 0 4px;">
+const indexBody = `<div style="padding: 32px 0 4px;">
     <p style="color:var(--text-dim); max-width: 60ch; margin:0;">${SITE_TAGLINE}</p>
   </div>
   ${heroHtml}
@@ -342,8 +417,7 @@ const indexBody = `<div class="wrap">
   </div>
   <div class="category-strip">
     ${categoryStripHtml}
-  </div>
-</div>`;
+  </div>`;
 
 fs.writeFileSync(
   path.join(DOCS_DIR, "index.html"),
@@ -357,23 +431,20 @@ fs.writeFileSync(
   })
 );
 
-// ---------- About page ----------
-const aboutBody = `<div class="wrap-narrow">
-  <div class="article-header">
+const aboutBody = `<div class="article-header">
     <div class="eyebrow">About</div>
     <h1>About &amp; Affiliate Disclosure</h1>
   </div>
-  <article class="body">
+  <article class="body" style="max-width:760px;">
     <p>${SITE_NAME} publishes practical, tested-on-paper guidance for setting up a real, functional home office in a small apartment, dorm, or shared room — no spare room required.</p>
     <h2>Affiliate Disclosure</h2>
     <p>${SITE_NAME} is a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.com. As an Amazon Associate, we earn from qualifying purchases. This comes at no additional cost to you.</p>
     <p>Product recommendations are based on publicly available specifications, pricing, and customer review data. We do not receive products for free from manufacturers in exchange for coverage.</p>
     <h2>About our images</h2>
-    <p>Where we don't yet have a real, human-verified product photo, articles display a clearly labeled AI-generated reference illustration instead — never a fabricated depiction of the actual product. Always check the Amazon listing via the buy link for real product photos before purchasing.</p>
+    <p>Where we don't yet have a real, human-verified product photo, articles display clearly labeled AI-generated reference illustrations instead — never a fabricated depiction of the actual product. Always check the Amazon listing via the buy link for real product photos before purchasing.</p>
     <h2>Contact</h2>
     <p>Questions or corrections: use the contact method listed in this site's footer or repository.</p>
-  </article>
-</div>`;
+  </article>`;
 fs.writeFileSync(
   path.join(DOCS_DIR, "about.html"),
   pageShell({
@@ -385,7 +456,6 @@ fs.writeFileSync(
   })
 );
 
-// ---------- robots.txt + sitemap.xml ----------
 fs.writeFileSync(path.join(DOCS_DIR, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${SITE_URL}/sitemap.xml\n`);
 
 const urls = [
@@ -400,4 +470,4 @@ ${urls.map((u) => `  <url><loc>${u}</loc></url>`).join("\n")}
 </urlset>`;
 fs.writeFileSync(path.join(DOCS_DIR, "sitemap.xml"), sitemap);
 
-console.log(`Built ${articles.length} article(s) and ${categories.length} categor${categories.length === 1 ? "y" : "ies"} into /docs`);
+console.log(`Built ${articles.length} article(s) and ${categories.length} categor${categories.length === 1 ? "y" : "ies"} (with content) into /docs`);
