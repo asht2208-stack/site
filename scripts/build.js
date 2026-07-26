@@ -24,6 +24,9 @@ const AI_IMAGE_DIR = path.join(DOCS_DIR, "images", "ai");
 const PRODUCTS_PATH = path.join(ROOT, "content/products.json");
 const CATEGORIES_PATH = path.join(ROOT, "content/categories.json");
 
+// Your Ko-fi support page
+const BUY_ME_A_COFFEE_URL = "https://ko-fi.com/umk161918";
+
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 fs.mkdirSync(DOCS_ARTICLES_DIR, { recursive: true });
@@ -456,11 +459,34 @@ fs.writeFileSync(
   })
 );
 
+const supportBody = `<div class="article-header">
+    <div class="eyebrow">Support</div>
+    <h1>Buy Us a Coffee</h1>
+  </div>
+  <article class="body" style="max-width:640px;">
+    <p>${SITE_NAME} is an independent, one-person project. Every guide is researched, written, and published to help people set up a real, functional home office in a small space — without pushy sales tactics or fake reviews.</p>
+    <p>If a guide saved you time, helped you make a better purchase, or just made your small-space setup a little nicer, you can support the site by buying us a coffee. It genuinely helps cover hosting, tools, and the time spent keeping recommendations accurate and honest.</p>
+    <p>Every contribution, big or small, goes directly toward keeping this site independent and ad-free beyond our Amazon affiliate disclosures.</p>
+    <a class="btn-primary" href="${BUY_ME_A_COFFEE_URL}" target="_blank" rel="noopener" style="margin-top:12px;">☕ Buy Me a Coffee</a>
+    <p style="margin-top:32px; font-size:.85rem; color:var(--text-faint);">Support is entirely optional and never required to access any guide, comparison, or recommendation on this site.</p>
+  </article>`;
+fs.writeFileSync(
+  path.join(DOCS_DIR, "support.html"),
+  pageShell({
+    title: `Support Us — ${SITE_NAME}`,
+    description: "Support The Compact Office with a small donation",
+    bodyHtml: supportBody,
+    comingSoonText,
+    categories,
+  })
+);
+
 fs.writeFileSync(path.join(DOCS_DIR, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${SITE_URL}/sitemap.xml\n`);
 
 const urls = [
   `${SITE_URL}/`,
   `${SITE_URL}/about.html`,
+  `${SITE_URL}/support.html`,
   ...categories.map((c) => `${SITE_URL}/category-${c.slug}.html`),
   ...articles.map((a) => `${SITE_URL}/articles/${a.slug}.html`),
 ];
