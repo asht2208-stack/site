@@ -1,4 +1,13 @@
 {
-  "current": null,
+  "current": {
+    "suggested_name": "Clamp-on under-desk cable management tray",
+    "category": "cables",
+    "why_it_fits": "It hides messy power strips and cords beneath small desks without requiring permanent drilling or sacrificing limited legroom.",
+    "estimated_price_range": "$15-$35",
+    "search_hint": "clamp on under desk cable management tray",
+    "status": "pending_review",
+    "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
+    "suggested_on": "2026-07-26"
+  },
   "skipped_names": []
 }
