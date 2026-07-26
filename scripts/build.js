@@ -53,9 +53,11 @@ const shopPicksBlock = shopPicksHtml(productsData.products || []);
 const PENDING_PATH = path.join(ROOT, "content/products-pending.json");
 const pendingData = fs.existsSync(PENDING_PATH)
   ? JSON.parse(fs.readFileSync(PENDING_PATH, "utf-8"))
-  : { current: null };
-const comingSoonText = pendingData.current?.suggested_name
-  ? pendingData.current.suggested_name.replace(/^(a|an|the)\s+/i, "")
+  : {};
+// Support both the new { current: {...} } format and the older { pending: [...] } format.
+const pendingSuggestion = pendingData.current || (pendingData.pending && pendingData.pending[0]) || null;
+const comingSoonText = pendingSuggestion?.suggested_name
+  ? pendingSuggestion.suggested_name.replace(/^(a|an|the)\s+/i, "")
   : "";
 
 function readTimeFor(markdown) {
