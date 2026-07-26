@@ -49,7 +49,7 @@ async function replenishTopics() {
 Here are topics already used or queued (do not repeat these or anything too similar):
 ${existing}
 
-Generate 20 new topic ideas for future articles, in the same style (short, specific, practical, each focused on one aspect of small-space home offices — desks, chairs, storage, lighting, cables, soundproofing, dual-use furniture, small-room layouts, budget setups, dorm setups, etc). Some topics can naturally invite comparing two similar products (e.g. "X vs Y for small rooms").
+Generate 20 new topic ideas for future articles, in the same style (short, specific, practical, each focused on one aspect of small-space home offices — desks, chairs, storage, lighting, cables, soundproofing, dual-use furniture, small-room layouts, budget setups, dorm setups, etc). Whenever two products of the same general type exist (e.g. two office chairs, two printers, two monitors), prioritize topics that directly compare them (e.g. "Office Chair A vs Office Chair B: Which Fits a Small Room Better").
 
 Output ONLY a plain list, one topic per line, no numbering, no bullets, no extra commentary.`;
   const text = await callGemini(prompt);
@@ -118,17 +118,10 @@ function imageSubjectFor(products, topic) {
   return cats.join(" and ");
 }
 
-// Removes stray control characters (null bytes etc.) that occasionally show
-// up in LLM output and otherwise break YAML frontmatter parsing.
 function sanitizeMarkdown(text) {
   return text.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "").trim();
 }
 
-// Safely inserts extra frontmatter fields into an already-generated
-// markdown string. Tries a full YAML parse/stringify first (cleanest
-// output); if that fails for any reason (malformed YAML from the model),
-// falls back to splicing the fields directly into the frontmatter block
-// as plain text so a single bad article never crashes the whole pipeline.
 function addFrontmatterFields(markdown, extraFields) {
   try {
     const parsed = matter(markdown + "\n");
@@ -148,7 +141,6 @@ function addFrontmatterFields(markdown, extraFields) {
         markdown.slice(closingDelimIndex)
       );
     }
-    // No recognizable frontmatter block at all — prepend a fresh one.
     return `---\n${lines.join("\n")}\n---\n\n${markdown}`;
   }
 }
@@ -199,7 +191,7 @@ Requirements:
 - 700-1200 words, USA audience, practical and specific to small spaces.
 - Use H2 sections.
 - DECIDE THE FORMAT FIRST:
-  - If two or more products from the list above are genuinely comparable for this topic (e.g. two office chairs, two desks — same general product type), write this as a COMPARISON + REVIEW article: start with an H2 "Quick Comparison" section containing a Markdown table with columns Product | Price | Key Specs | Best For, using only the compared products. After the table, include a separate pick block (format below) for EACH compared product, then continue with prose sections reviewing each in more depth.
+  - If two or more products from the list above share the SAME category (e.g. two office chairs, two printers, two monitors), you MUST write this as a COMPARISON + REVIEW article: start with an H2 "Quick Comparison" section containing a Markdown table with columns Product | Price | Key Specs | Best For, using only the compared products. After the table, include a separate pick block (format below) for EACH compared product, then continue with prose sections reviewing each in more depth.
   - If only one product from the list genuinely fits, write a single in-depth REVIEW article with one pick block for that product.
   - If none of the provided products genuinely fit this topic, say so plainly in the article rather than forcing a mismatched recommendation, and skip the pick block(s) entirely.
 - For each product you recommend, insert this exact HTML block once, at the point where you first introduce it (fill in the values from the matching product):
@@ -235,7 +227,14 @@ Requirements:
 
   const shopCategory = modeCategorySlug(referencedProducts.length ? referencedProducts : products);
   const imageSubject = imageSubjectFor(referencedProducts, topic);
-  const format = referencedProducts.length >= 2 ? "comparison" : "review";
+
+  // Force comparison format whenever 2+ referenced products share the same
+  // product category — rather than leaving it to chance based on how the
+  // topic was phrased or how the model interpreted it.
+  const hasComparableCategory =
+    referencedProducts.length >= 2 &&
+    referencedProducts[0].category === referencedProducts[1]?.category;
+  const format = hasComparableCategory ? "comparison" : "review";
 
   const extraFields = {
     shop_category: shopCategory,
