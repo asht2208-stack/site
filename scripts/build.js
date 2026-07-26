@@ -24,7 +24,7 @@ const AI_IMAGE_DIR = path.join(DOCS_DIR, "images", "ai");
 const PRODUCTS_PATH = path.join(ROOT, "content/products.json");
 const CATEGORIES_PATH = path.join(ROOT, "content/categories.json");
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 fs.mkdirSync(DOCS_ARTICLES_DIR, { recursive: true });
 fs.mkdirSync(AI_IMAGE_DIR, { recursive: true });
@@ -112,34 +112,34 @@ function aiPromptFor(category, subject, variationKey) {
   );
 }
 
-async function generateAiImageGemini(prompt, destPath) {
-  if (!GEMINI_API_KEY) {
-    console.warn("GEMINI_API_KEY not set — skipping AI image generation.");
+async function generateAiImageOpenAI(prompt, destPath) {
+  if (!OPENAI_API_KEY) {
+    console.warn("OPENAI_API_KEY not set — skipping AI image generation.");
     return false;
   }
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 60000);
   try {
-    const res = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent",
-      {
-        method: "POST",
-        signal: controller.signal,
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": GEMINI_API_KEY,
-        },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
-        }),
-      }
-    );
+    const res = await fetch("https://api.openai.com/v1/images/generations", {
+      method: "POST",
+      signal: controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-image-1",
+        prompt,
+        size: "1024x1024",
+        quality: "low",
+        n: 1,
+      }),
+    });
     if (!res.ok) throw new Error(`status ${res.status}: ${await res.text()}`);
     const data = await res.json();
-    const parts = data.candidates?.[0]?.content?.parts || [];
-    const imagePart = parts.find((p) => p.inlineData?.data);
-    if (!imagePart) throw new Error("no image data in response");
-    const buffer = Buffer.from(imagePart.inlineData.data, "base64");
+    const b64 = data.data?.[0]?.b64_json;
+    if (!b64) throw new Error("no image data in response");
+    const buffer = Buffer.from(b64, "base64");
     fs.writeFileSync(destPath, buffer);
     console.log(`Generated AI image: ${destPath}`);
     return true;
@@ -157,13 +157,13 @@ function sleep(ms) {
 
 async function ensureImage(prompt, destPath) {
   if (fs.existsSync(destPath)) return true;
-  let ok = await generateAiImageGemini(prompt, destPath);
+  let ok = await generateAiImageOpenAI(prompt, destPath);
   if (!ok) {
-    console.log("Retrying after a longer cooldown (free-tier rate limit)...");
-    await sleep(45000);
-    ok = await generateAiImageGemini(prompt, destPath);
+    console.log("Retrying after a short cooldown...");
+    await sleep(10000);
+    ok = await generateAiImageOpenAI(prompt, destPath);
   }
-  await sleep(20000);
+  await sleep(3000);
   return ok;
 }
 
