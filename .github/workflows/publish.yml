@@ -28,6 +28,8 @@ jobs:
         run: npm run generate
 
       - name: Build site
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: npm run build
 
       - name: Commit and push

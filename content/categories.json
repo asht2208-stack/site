@@ -1,29 +1,24 @@
 {
   "categories": [
-    {
-      "slug": "office-furniture",
-      "name": "Office Furniture",
-      "subcategories": ["Standing Desks", "Office Chairs", "Monitor Arms", "Storage & Organization"]
-    },
-    {
-      "slug": "power-cables",
-      "name": "Power & Cables",
-      "subcategories": ["Power Strips & Surge Protectors", "Cable Management"]
-    },
-    {
-      "slug": "pc-desktops",
-      "name": "PC & Desktops",
-      "subcategories": ["Desktop PCs", "PC Accessories"]
-    },
-    {
-      "slug": "laptops",
-      "name": "Laptops",
-      "subcategories": ["Laptops", "Laptop Accessories"]
-    },
-    {
-      "slug": "mobile",
-      "name": "Mobile",
-      "subcategories": ["Phones", "Tablets", "Mobile Accessories"]
-    }
+    { "slug": "office-furniture", "name": "Office Furniture", "subcategories": ["Office Desks", "Standing Desks", "Executive Desks", "Corner Desks", "Office Chairs", "Guest Chairs", "Filing Cabinets", "Bookshelves", "Conference Tables", "Reception Furniture", "Storage Cabinets", "Lockers"] },
+    { "slug": "computer-technology", "name": "Computer & Technology", "subcategories": ["Desktop PCs", "Laptops", "Mini PCs", "All-in-One PCs", "Workstations", "Servers", "NAS Storage", "Thin Clients"] },
+    { "slug": "monitors-displays", "name": "Monitors & Displays", "subcategories": ["Computer Monitors", "Ultrawide Monitors", "Portable Monitors", "Smart Displays", "Digital Signage", "Interactive Whiteboards", "Projectors", "TVs"] },
+    { "slug": "input-devices", "name": "Input Devices", "subcategories": ["Mechanical Keyboards", "Wireless Keyboards", "Ergonomic Keyboards", "Gaming Keyboards", "Mouse", "Trackballs", "Graphic Tablets", "Presentation Clickers"] },
+    { "slug": "audio-video", "name": "Audio & Video", "subcategories": ["Speakers", "Headphones", "Earbuds", "Conference Speakers", "Microphones", "Webcams", "Video Conference Cameras", "Soundbars"] },
+    { "slug": "printers-office-machines", "name": "Printers & Office Machines", "subcategories": ["Laser Printers", "Inkjet Printers", "Label Printers", "Scanners", "Copiers", "Laminators", "Binding Machines", "Shredders"] },
+    { "slug": "networking", "name": "Networking", "subcategories": ["WiFi Routers", "Mesh WiFi", "Switches", "Access Points", "Firewalls", "Ethernet Cables", "Patch Panels", "Network Tools"] },
+    { "slug": "power-electrical", "name": "Power & Electrical", "subcategories": ["UPS", "Inverters", "Surge Protectors", "Extension Boards", "Power Strips", "USB Chargers", "Wall Chargers", "Power Banks", "Batteries"] },
+    { "slug": "cables-adapters", "name": "Cables & Adapters", "subcategories": ["HDMI", "DisplayPort", "USB-C", "USB-A", "Ethernet", "VGA", "DVI", "Audio Cables", "Cable Organizers", "Cable Sleeves"] },
+    { "slug": "storage-devices", "name": "Storage Devices", "subcategories": ["SSD", "HDD", "External SSD", "External HDD", "USB Flash Drives", "Memory Cards", "NAS Drives"] },
+    { "slug": "office-supplies", "name": "Office Supplies", "subcategories": ["Pens", "Pencils", "Markers", "Highlighters", "Notebooks", "Sticky Notes", "Staplers", "Staple Pins", "Paper Clips", "Rubber Bands", "Scissors", "Glue", "Tape", "Envelopes", "Files", "Folders", "Calendars"] },
+    { "slug": "desk-accessories", "name": "Desk Accessories", "subcategories": ["Monitor Arms", "Laptop Stands", "Phone Holders", "Desk Mats", "Wrist Rests", "Desk Organizers", "Pen Holders", "Mouse Pads", "Cup Holders"] },
+    { "slug": "lighting", "name": "Lighting", "subcategories": ["Desk Lamps", "LED Lights", "Ceiling Lights", "Smart Lights", "Floor Lamps", "Reading Lights"] },
+    { "slug": "cleaning-maintenance", "name": "Cleaning & Maintenance", "subcategories": ["Keyboard Cleaners", "Screen Cleaners", "Air Dusters", "Vacuum Cleaners", "Cleaning Wipes", "Trash Bins", "Air Purifiers"] },
+    { "slug": "coffee-pantry", "name": "Coffee & Pantry", "subcategories": ["Coffee Machines", "Electric Kettles", "Water Dispensers", "Refrigerators", "Microwave Ovens", "Mugs", "Storage Containers"] },
+    { "slug": "security", "name": "Security", "subcategories": ["CCTV Cameras", "Smart Locks", "Door Sensors", "Biometric Devices", "Safes", "Fireproof Cabinets", "Alarm Systems"] },
+    { "slug": "smart-office", "name": "Smart Office", "subcategories": ["Smart Plugs", "Smart Switches", "Smart Displays", "Smart Speakers", "Smart Thermostats", "IoT Sensors"] },
+    { "slug": "ergonomics-wellness", "name": "Ergonomics & Wellness", "subcategories": ["Footrests", "Balance Boards", "Standing Mats", "Back Supports", "Seat Cushions", "Air Quality Monitors", "Humidifiers"] },
+    { "slug": "meeting-room", "name": "Meeting Room", "subcategories": ["Conference Phones", "Whiteboards", "Glass Boards", "Digital Whiteboards", "Video Conferencing Kits", "Room Booking Displays"] },
+    { "slug": "workspace-decor", "name": "Workspace Decor", "subcategories": ["Indoor Plants", "Wall Art", "Clocks", "Curtains", "Rugs", "Decorative Storage"] }
   ]
 }

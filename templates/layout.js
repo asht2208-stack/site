@@ -21,13 +21,17 @@ function head(title, description) {
 </script>`;
 }
 
-function header(categories = []) {
-  const categoryLinks = categories
-    .map((c) => `<a href="category-${c.slug}.html">${c.name}</a>`)
-    .join("\n        ");
-
+function header() {
   return `<header class="site-header">
     <div class="wrap navbar">
+
+      <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle categories menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
 
       <a class="brand" href="index.html">
         <span class="brand-title">${SITE_NAME}</span>
@@ -36,7 +40,6 @@ function header(categories = []) {
 
       <nav class="main-nav">
         <a href="index.html">Home</a>
-        ${categoryLinks}
         <a href="about.html">About</a>
       </nav>
 
@@ -56,6 +59,19 @@ function header(categories = []) {
   </header>`;
 }
 
+function sideNav(categories = [], activeSlug = null) {
+  const items = categories
+    .map((c) => {
+      const isActive = c.slug === activeSlug;
+      return `<a class="side-nav-item ${isActive ? "active" : ""}" href="category-${c.slug}.html">${c.name}</a>`;
+    })
+    .join("\n");
+  return `<aside class="side-nav" id="side-nav">
+  <div class="side-nav-title">Categories</div>
+  ${items}
+</aside>`;
+}
+
 function footer(comingSoonText) {
   const comingSoonHtml = comingSoonText
     ? `<div class="coming-soon">📦 Coming soon: our guide on <span class="coming-soon-pulse">${comingSoonText}</span></div>`
@@ -68,16 +84,33 @@ function footer(comingSoonText) {
 </footer>`;
 }
 
-export function pageShell({ title, description, bodyHtml, extraScript = "", comingSoonText = "", categories = [] }) {
+export const sidebarToggleScript = `<script>
+(function() {
+  const btn = document.getElementById('sidebar-toggle');
+  const nav = document.getElementById('side-nav');
+  if (!btn || !nav) return;
+  btn.addEventListener('click', function() {
+    nav.classList.toggle('open');
+  });
+})();
+</script>`;
+
+export function pageShell({ title, description, bodyHtml, extraScript = "", comingSoonText = "", categories = [], activeCategory = null }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 ${head(title, description)}
 </head>
 <body>
-${header(categories)}
-${bodyHtml}
+${header()}
+<div class="layout-shell">
+  ${sideNav(categories, activeCategory)}
+  <main class="main-content">
+    ${bodyHtml}
+  </main>
+</div>
 ${footer(comingSoonText)}
+${sidebarToggleScript}
 ${extraScript}
 </body>
 </html>`;
