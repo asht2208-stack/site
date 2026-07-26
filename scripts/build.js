@@ -13,6 +13,8 @@ import {
   SITE_URL,
 } from "../templates/layout.js";
 
+marked.setOptions({ gfm: true });
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const ARTICLES_DIR = path.join(ROOT, "content/articles");
@@ -20,15 +22,22 @@ const DOCS_DIR = path.join(ROOT, "docs");
 const DOCS_ARTICLES_DIR = path.join(DOCS_DIR, "articles");
 const AI_IMAGE_DIR = path.join(DOCS_DIR, "images", "ai");
 const PRODUCTS_PATH = path.join(ROOT, "content/products.json");
+const CATEGORIES_PATH = path.join(ROOT, "content/categories.json");
 
 fs.mkdirSync(DOCS_ARTICLES_DIR, { recursive: true });
 fs.mkdirSync(AI_IMAGE_DIR, { recursive: true });
 fs.copyFileSync(path.join(ROOT, "templates/style.css"), path.join(DOCS_DIR, "style.css"));
 
-// ---------- Shop Our Picks (always real products, straight from products.json) ----------
+// ---------- Products + categories (source of truth) ----------
 const productsData = fs.existsSync(PRODUCTS_PATH)
   ? JSON.parse(fs.readFileSync(PRODUCTS_PATH, "utf-8"))
   : { products: [] };
+
+const categoriesData = fs.existsSync(CATEGORIES_PATH)
+  ? JSON.parse(fs.readFileSync(CATEGORIES_PATH, "utf-8"))
+  : { categories: [] };
+
+const categories = categoriesData.categories || [];
 
 function shopPicksHtml(products) {
   if (!products.length) return "";
@@ -54,7 +63,6 @@ const PENDING_PATH = path.join(ROOT, "content/products-pending.json");
 const pendingData = fs.existsSync(PENDING_PATH)
   ? JSON.parse(fs.readFileSync(PENDING_PATH, "utf-8"))
   : {};
-// Support both the new { current: {...} } format and the older { pending: [...] } format.
 const pendingSuggestion = pendingData.current || (pendingData.pending && pendingData.pending[0]) || null;
 const comingSoonText = pendingSuggestion?.suggested_name
   ? pendingSuggestion.suggested_name.replace(/^(a|an|the)\s+/i, "")
@@ -66,17 +74,19 @@ function readTimeFor(markdown) {
 }
 
 // ---------- AI reference image generation (Pollinations, free, no key) ----------
-// IMPORTANT: prompts are deliberately generic/topical (category + theme only).
+// IMPORTANT: prompts are deliberately generic/topical (category + subject only).
 // They never reference a specific brand or model, since these are disclosed
 // "reference illustrations," not depictions of any real product.
-function aiPromptFor(category, title) {
-  const theme = title
-    .replace(/[^\w\s]/g, "")
-    .split(" ")
-    .slice(0, 6)
-    .join(" ");
+function aiPromptFor(category, title, imageSubject) {
+  const subject =
+    imageSubject ||
+    title
+      .replace(/[^\w\s]/g, "")
+      .split(" ")
+      .slice(0, 6)
+      .join(" ");
   return (
-    `minimalist editorial photograph, ${category.toLowerCase()}, ${theme}, ` +
+    `minimalist editorial photograph, ${category.toLowerCase()}, ${subject}, ` +
     `small modern home office, clean tidy desk setup, soft natural light, ` +
     `neutral tones, no text, no logos, no brand names, no people`
   );
@@ -117,6 +127,9 @@ const articles = files.map((file) => {
     title: data.title || slug,
     excerpt: data.excerpt || "",
     category: data.category || "Guide",
+    shopCategory: data.shop_category || null,
+    imageSubject: data.image_subject || null,
+    format: data.format || "review",
     date: data.date || "",
     image: data.image || null,
     imageCredit: data.image_credit || null,
@@ -143,7 +156,7 @@ for (const a of articles) {
     continue;
   }
 
-  const prompt = aiPromptFor(a.category, a.title);
+  const prompt = aiPromptFor(a.category, a.title, a.imageSubject);
   let ok = await generateAiImage(prompt, destPath);
 
   if (!ok) {
@@ -163,7 +176,7 @@ for (const a of articles) {
 
 function aiBadge(isAI) {
   return isAI
-    ? `<div class="ai-badge" title="AI-generated reference image — not an actual product photo">AI reference image</div>`
+    ? `<div class="ai-badge" title="AI-generated reference image — not an actual product photo">AI ref</div>`
     : "";
 }
 
@@ -193,8 +206,87 @@ for (const a of articles) {
 </div>`;
   fs.writeFileSync(
     path.join(DOCS_ARTICLES_DIR, `${a.slug}.html`),
-    pageShell({ title: `${a.title} — ${SITE_NAME}`, description: a.excerpt, bodyHtml: body, comingSoonText })
+    pageShell({
+      title: `${a.title} — ${SITE_NAME}`,
+      description: a.excerpt,
+      bodyHtml: body,
+      comingSoonText,
+      categories,
+    })
   );
+}
+
+// ---------- Category pages ----------
+function productsForCategory(slug) {
+  return (productsData.products || []).filter((p) => p.category_slug === slug);
+}
+
+function articlesForCategory(slug) {
+  return articles.filter((a) => a.shopCategory === slug);
+}
+
+function categoryPageHtml(cat) {
+  const prods = productsForCategory(cat.slug);
+  const arts = articlesForCategory(cat.slug);
+
+  const bySubcat = {};
+  for (const p of prods) {
+    const key = p.subcategory || "Other";
+    if (!bySubcat[key]) bySubcat[key] = [];
+    bySubcat[key].push(p);
+  }
+
+  const subcatHtml = (cat.subcategories || [])
+    .map((sub) => {
+      const items = bySubcat[sub] || [];
+      if (!items.length) return "";
+      const itemsHtml = items
+        .map(
+          (p) => `<div class="shop-pick-item">
+  <div class="shop-pick-name">${p.name}</div>
+  <div class="shop-pick-price">${p.price_range || ""}</div>
+  <a class="shop-pick-buy" href="${p.url}" rel="nofollow sponsored" target="_blank">Check price on Amazon</a>
+</div>`
+        )
+        .join("\n");
+      return `<div class="sidebar-box shop-picks" style="margin-bottom:20px;">
+  <div class="section-head" style="margin-bottom:12px;"><h2>${sub}</h2></div>
+  ${itemsHtml}
+</div>`;
+    })
+    .join("\n");
+
+  const articleCardsHtml = arts.length
+    ? `<div class="card-grid">${arts.map((a) => articleCard(a)).join("\n")}</div>`
+    : `<p style="color:var(--text-faint)">No guides in this category yet. Check back soon.</p>`;
+
+  const body = `<div class="wrap">
+  <div class="article-header" style="padding-top:32px;">
+    <div class="eyebrow">Category</div>
+    <h1>${cat.name}</h1>
+  </div>
+  <div class="page-grid">
+    <div>
+      <div class="section-head"><h2>Guides</h2></div>
+      ${articleCardsHtml}
+    </div>
+    <div>
+      ${subcatHtml || '<p style="color:var(--text-faint)">Products coming soon.</p>'}
+    </div>
+  </div>
+</div>`;
+
+  return pageShell({
+    title: `${cat.name} — ${SITE_NAME}`,
+    description: `${cat.name} buying guides, comparisons, and recommended picks.`,
+    bodyHtml: body,
+    comingSoonText,
+    categories,
+  });
+}
+
+for (const cat of categories) {
+  fs.writeFileSync(path.join(DOCS_DIR, `category-${cat.slug}.html`), categoryPageHtml(cat));
 }
 
 // ---------- Homepage ----------
@@ -202,15 +294,11 @@ const [featured, ...rest] = articles;
 const gridArticles = rest.slice(0, 8);
 const sidebarArticles = articles.slice(0, 5);
 
-const categoryCounts = {};
-for (const a of articles) {
-  categoryCounts[a.category] = (categoryCounts[a.category] || 0) + 1;
-}
-const categoryStripHtml = Object.entries(categoryCounts)
-  .map(
-    ([cat, count]) =>
-      `<a href="index.html">${cat}<span class="count">${count} guide${count === 1 ? "" : "s"}</span></a>`
-  )
+const categoryStripHtml = categories
+  .map((cat) => {
+    const count = productsForCategory(cat.slug).length;
+    return `<a href="category-${cat.slug}.html">${cat.name}<span class="count">${count} product${count === 1 ? "" : "s"}</span></a>`;
+  })
   .join("\n");
 
 const heroHtml = featured
@@ -265,6 +353,7 @@ fs.writeFileSync(
     bodyHtml: indexBody,
     extraScript: searchScript,
     comingSoonText,
+    categories,
   })
 );
 
@@ -287,7 +376,13 @@ const aboutBody = `<div class="wrap-narrow">
 </div>`;
 fs.writeFileSync(
   path.join(DOCS_DIR, "about.html"),
-  pageShell({ title: `About — ${SITE_NAME}`, description: "About and affiliate disclosure", bodyHtml: aboutBody, comingSoonText })
+  pageShell({
+    title: `About — ${SITE_NAME}`,
+    description: "About and affiliate disclosure",
+    bodyHtml: aboutBody,
+    comingSoonText,
+    categories,
+  })
 );
 
 // ---------- robots.txt + sitemap.xml ----------
@@ -296,6 +391,7 @@ fs.writeFileSync(path.join(DOCS_DIR, "robots.txt"), `User-agent: *\nAllow: /\nSi
 const urls = [
   `${SITE_URL}/`,
   `${SITE_URL}/about.html`,
+  ...categories.map((c) => `${SITE_URL}/category-${c.slug}.html`),
   ...articles.map((a) => `${SITE_URL}/articles/${a.slug}.html`),
 ];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -304,4 +400,4 @@ ${urls.map((u) => `  <url><loc>${u}</loc></url>`).join("\n")}
 </urlset>`;
 fs.writeFileSync(path.join(DOCS_DIR, "sitemap.xml"), sitemap);
 
-console.log(`Built ${articles.length} article(s) into /docs`);
+console.log(`Built ${articles.length} article(s) and ${categories.length} categor${categories.length === 1 ? "y" : "ies"} into /docs`);

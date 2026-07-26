@@ -10,10 +10,22 @@ function head(title, description) {
 <base href="${SITE_URL}/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">`;
+<link rel="stylesheet" href="style.css">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VSH1ZQFS9Q"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-VSH1ZQFS9Q');
+</script>`;
 }
 
-function header() {
+function header(categories = []) {
+  const categoryLinks = categories
+    .map((c) => `<a href="category-${c.slug}.html">${c.name}</a>`)
+    .join("\n        ");
+
   return `<header class="site-header">
     <div class="wrap navbar">
 
@@ -24,8 +36,7 @@ function header() {
 
       <nav class="main-nav">
         <a href="index.html">Home</a>
-        <a href="index.html">Buying Guides</a>
-        <a href="index.html">Setup Tips</a>
+        ${categoryLinks}
         <a href="about.html">About</a>
       </nav>
 
@@ -57,14 +68,14 @@ function footer(comingSoonText) {
 </footer>`;
 }
 
-export function pageShell({ title, description, bodyHtml, extraScript = "", comingSoonText = "" }) {
+export function pageShell({ title, description, bodyHtml, extraScript = "", comingSoonText = "", categories = [] }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 ${head(title, description)}
 </head>
 <body>
-${header()}
+${header(categories)}
 ${bodyHtml}
 ${footer(comingSoonText)}
 ${extraScript}

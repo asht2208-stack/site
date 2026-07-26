@@ -1,0 +1,29 @@
+{
+  "categories": [
+    {
+      "slug": "office-furniture",
+      "name": "Office Furniture",
+      "subcategories": ["Standing Desks", "Office Chairs", "Monitor Arms", "Storage & Organization"]
+    },
+    {
+      "slug": "power-cables",
+      "name": "Power & Cables",
+      "subcategories": ["Power Strips & Surge Protectors", "Cable Management"]
+    },
+    {
+      "slug": "pc-desktops",
+      "name": "PC & Desktops",
+      "subcategories": ["Desktop PCs", "PC Accessories"]
+    },
+    {
+      "slug": "laptops",
+      "name": "Laptops",
+      "subcategories": ["Laptops", "Laptop Accessories"]
+    },
+    {
+      "slug": "mobile",
+      "name": "Mobile",
+      "subcategories": ["Phones", "Tablets", "Mobile Accessories"]
+    }
+  ]
+}

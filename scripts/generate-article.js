@@ -44,12 +44,12 @@ function popTopic() {
 async function replenishTopics() {
   console.log("Topic queue running low — asking Gemini for more topics.");
   const existing = fs.readFileSync(TOPICS_PATH, "utf-8");
-  const prompt = `You write topic ideas for a niche content site called "The Compact Office", which publishes buying guides and setup tips for people creating a functional home office in a small apartment, dorm, or shared room in the US.
+  const prompt = `You write topic ideas for a niche content site called "The Compact Office", which publishes buying guides, comparisons, and setup tips for people creating a functional home office in a small apartment, dorm, or shared room in the US.
 
 Here are topics already used or queued (do not repeat these or anything too similar):
 ${existing}
 
-Generate 20 new topic ideas for future articles, in the same style (short, specific, practical, each focused on one aspect of small-space home offices — desks, chairs, storage, lighting, cables, soundproofing, dual-use furniture, small-room layouts, budget setups, dorm setups, etc).
+Generate 20 new topic ideas for future articles, in the same style (short, specific, practical, each focused on one aspect of small-space home offices — desks, chairs, storage, lighting, cables, soundproofing, dual-use furniture, small-room layouts, budget setups, dorm setups, etc). Some topics can naturally invite comparing two similar products (e.g. "X vs Y for small rooms").
 
 Output ONLY a plain list, one topic per line, no numbering, no bullets, no extra commentary.`;
   const text = await callGemini(prompt);
@@ -90,6 +90,37 @@ async function callGemini(prompt) {
   const data = await res.json();
   const parts = data.candidates?.[0]?.content?.parts || [];
   return parts.map((p) => p.text || "").join("\n");
+}
+
+// Picks the most common category_slug among a set of products (used to
+// file the article under the right category page). Falls back to the
+// first product's category_slug if there's a tie, or null if empty.
+function modeCategorySlug(products) {
+  if (!products.length) return null;
+  const counts = {};
+  for (const p of products) {
+    if (!p.category_slug) continue;
+    counts[p.category_slug] = (counts[p.category_slug] || 0) + 1;
+  }
+  let best = null;
+  let bestCount = 0;
+  for (const [slug, count] of Object.entries(counts)) {
+    if (count > bestCount) {
+      best = slug;
+      bestCount = count;
+    }
+  }
+  return best;
+}
+
+// Builds a short, specific subject phrase for the AI reference image prompt,
+// based on the actual product type(s) referenced — not the vague topic title.
+function imageSubjectFor(products, topic) {
+  if (!products.length) return topic;
+  const cats = [...new Set(products.map((p) => p.category).filter(Boolean))];
+  if (cats.length === 0) return topic;
+  if (cats.length === 1) return cats[0];
+  return cats.join(" and ");
 }
 
 async function main() {
@@ -135,19 +166,22 @@ date: "${new Date().toISOString().slice(0, 10)}"
 (article markdown body here)
 
 Requirements:
-- 700-1000 words, USA audience, practical and specific to small spaces.
+- 700-1200 words, USA audience, practical and specific to small spaces.
 - Use H2 sections.
-- When recommending a specific product from the list above, insert this exact HTML block once, at the point where you first introduce it (fill in the values from the matching product):
+- DECIDE THE FORMAT FIRST:
+  - If two or more products from the list above are genuinely comparable for this topic (e.g. two office chairs, two desks — same general product type), write this as a COMPARISON + REVIEW article: start with an H2 "Quick Comparison" section containing a Markdown table with columns Product | Price | Key Specs | Best For, using only the compared products. After the table, include a separate pick block (format below) for EACH compared product, then continue with prose sections reviewing each in more depth.
+  - If only one product from the list genuinely fits, write a single in-depth REVIEW article with one pick block for that product.
+  - If none of the provided products genuinely fit this topic, say so plainly in the article rather than forcing a mismatched recommendation, and skip the pick block(s) entirely.
+- For each product you recommend, insert this exact HTML block once, at the point where you first introduce it (fill in the values from the matching product):
 <div class="pick">
   <div class="label">Recommended pick</div>
   <div class="name">PRODUCT NAME</div>
   <p>One or two sentences on why it fits, using only the specs given.</p>
   <a class="buy" href="PRODUCT URL" rel="nofollow sponsored" target="_blank">Check price on Amazon</a>
 </div>
-- After that block, you will likely mention the product's name again naturally in later paragraphs (e.g. "The Monomi desk stands out because..."). Whenever you do, write that mention as an inline HTML link to the exact same product URL, in exactly this form: <a href="PRODUCT URL" rel="nofollow sponsored" target="_blank">Monomi Small Electric Standing Desk</a>. Do this for genuine, naturally-occurring mentions only — do not add extra sentences or paragraphs just to create more links, and do not link generic words like "desk" or "it," only the actual product name.
+- After a product's pick block, you will likely mention its name again naturally in later paragraphs (e.g. "The Monomi desk stands out because..."). Whenever you do, write that mention as an inline HTML link to the exact same product URL, in exactly this form: <a href="PRODUCT URL" rel="nofollow sponsored" target="_blank">Monomi Small Electric Standing Desk</a>. Do this for genuine, naturally-occurring mentions only — do not add extra sentences or paragraphs just to create more links, and do not link generic words like "desk" or "it," only the actual product name.
 - Do not make medical, legal, or guaranteed-outcome claims.
 - Do not fabricate reviews, ratings, or sales figures.
-- If none of the provided products genuinely fit this topic, say so plainly in the article rather than forcing a mismatched recommendation.
 - Output ONLY the frontmatter + markdown. No preamble, no code fences.`;
 
   console.log(`Generating article for topic: ${topic}`);
@@ -170,17 +204,25 @@ Requirements:
     };
   }
 
-  let finalMd = articleMd.trim() + "\n";
+  const shopCategory = modeCategorySlug(referencedProducts.length ? referencedProducts : products);
+  const imageSubject = imageSubjectFor(referencedProducts, topic);
+  const format = referencedProducts.length >= 2 ? "comparison" : "review";
+
+  const parsed = matter(articleMd.trim() + "\n");
+  parsed.data.shop_category = shopCategory;
+  parsed.data.image_subject = imageSubject;
+  parsed.data.format = format;
   if (image) {
-    const parsed = matter(finalMd);
     parsed.data.image = image.url;
     if (image.credit) parsed.data.image_credit = image.credit;
-    finalMd = matter.stringify(parsed.content, parsed.data);
   }
+  const finalMd = matter.stringify(parsed.content, parsed.data);
 
   fs.mkdirSync(ARTICLES_DIR, { recursive: true });
   fs.writeFileSync(path.join(ARTICLES_DIR, `${slug}.md`), finalMd);
-  console.log(`Wrote content/articles/${slug}.md${image ? " (with real product photo)" : " (no photo — no matching product image on file)"}`);
+  console.log(
+    `Wrote content/articles/${slug}.md (${format}${image ? ", with real product photo" : ", AI reference image"})`
+  );
 }
 
 main().catch((err) => {
