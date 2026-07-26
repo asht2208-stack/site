@@ -159,11 +159,11 @@ async function ensureImage(prompt, destPath) {
   if (fs.existsSync(destPath)) return true;
   let ok = await generateAiImageGemini(prompt, destPath);
   if (!ok) {
-    console.log("Retrying after a short cooldown...");
-    await sleep(15000);
+    console.log("Retrying after a longer cooldown (free-tier rate limit)...");
+    await sleep(45000);
     ok = await generateAiImageGemini(prompt, destPath);
   }
-  await sleep(6000);
+  await sleep(20000);
   return ok;
 }
 
