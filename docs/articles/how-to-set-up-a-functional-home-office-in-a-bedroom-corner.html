@@ -22,6 +22,14 @@
 <header class="site-header">
     <div class="wrap navbar">
 
+      <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle categories menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+
       <a class="brand" href="index.html">
         <span class="brand-title">The Compact Office</span>
         <span class="brand-tagline">Smart Workspace Reviews</span>
@@ -29,11 +37,6 @@
 
       <nav class="main-nav">
         <a href="index.html">Home</a>
-        <a href="category-office-furniture.html">Office Furniture</a>
-        <a href="category-power-cables.html">Power & Cables</a>
-        <a href="category-pc-desktops.html">PC & Desktops</a>
-        <a href="category-laptops.html">Laptops</a>
-        <a href="category-mobile.html">Mobile</a>
         <a href="about.html">About</a>
       </nav>
 
@@ -51,7 +54,32 @@
 
     </div>
   </header>
-<div class="wrap-narrow">
+<div class="layout-shell">
+  <aside class="side-nav" id="side-nav">
+  <div class="side-nav-title">Categories</div>
+  <a class="side-nav-item " href="category-office-furniture.html">Office Furniture</a>
+<a class="side-nav-item " href="category-computer-technology.html">Computer & Technology</a>
+<a class="side-nav-item " href="category-monitors-displays.html">Monitors & Displays</a>
+<a class="side-nav-item " href="category-input-devices.html">Input Devices</a>
+<a class="side-nav-item " href="category-audio-video.html">Audio & Video</a>
+<a class="side-nav-item " href="category-printers-office-machines.html">Printers & Office Machines</a>
+<a class="side-nav-item " href="category-networking.html">Networking</a>
+<a class="side-nav-item " href="category-power-electrical.html">Power & Electrical</a>
+<a class="side-nav-item " href="category-cables-adapters.html">Cables & Adapters</a>
+<a class="side-nav-item " href="category-storage-devices.html">Storage Devices</a>
+<a class="side-nav-item " href="category-office-supplies.html">Office Supplies</a>
+<a class="side-nav-item " href="category-desk-accessories.html">Desk Accessories</a>
+<a class="side-nav-item " href="category-lighting.html">Lighting</a>
+<a class="side-nav-item " href="category-cleaning-maintenance.html">Cleaning & Maintenance</a>
+<a class="side-nav-item " href="category-coffee-pantry.html">Coffee & Pantry</a>
+<a class="side-nav-item " href="category-security.html">Security</a>
+<a class="side-nav-item " href="category-smart-office.html">Smart Office</a>
+<a class="side-nav-item " href="category-ergonomics-wellness.html">Ergonomics & Wellness</a>
+<a class="side-nav-item " href="category-meeting-room.html">Meeting Room</a>
+<a class="side-nav-item " href="category-workspace-decor.html">Workspace Decor</a>
+</aside>
+  <main class="main-content">
+    <div class="wrap-narrow">
   <div class="article-header">
     <div class="eyebrow">Setup Tips</div>
     <h1>How to Set Up a Functional Home Office in a Bedroom Corner</h1>
@@ -93,12 +121,24 @@
 </div>
 </div>
 </div>
+  </main>
+</div>
 <footer class="site-footer">
   <div class="wrap">
-    
+    <div class="coming-soon">📦 Coming soon: our guide on <span class="coming-soon-pulse">Clamp-on under-desk cable management tray</span></div>
     <p>© 2026 The Compact Office. As an Amazon Associate we earn from qualifying purchases. See <a href="about.html">disclosure</a>.</p>
   </div>
 </footer>
+<script>
+(function() {
+  const btn = document.getElementById('sidebar-toggle');
+  const nav = document.getElementById('side-nav');
+  if (!btn || !nav) return;
+  btn.addEventListener('click', function() {
+    nav.classList.toggle('open');
+  });
+})();
+</script>
 
 </body>
 </html>

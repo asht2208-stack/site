@@ -80,7 +80,7 @@ async function callGemini(prompt) {
       },
       body: JSON.stringify({
         contents: [{ role: "user", parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: 3000 },
+        generationConfig: { maxOutputTokens: 4000 },
       }),
     }
   );
@@ -92,9 +92,6 @@ async function callGemini(prompt) {
   return parts.map((p) => p.text || "").join("\n");
 }
 
-// Picks the most common category_slug among a set of products (used to
-// file the article under the right category page). Falls back to the
-// first product's category_slug if there's a tie, or null if empty.
 function modeCategorySlug(products) {
   if (!products.length) return null;
   const counts = {};
@@ -113,14 +110,47 @@ function modeCategorySlug(products) {
   return best;
 }
 
-// Builds a short, specific subject phrase for the AI reference image prompt,
-// based on the actual product type(s) referenced — not the vague topic title.
 function imageSubjectFor(products, topic) {
   if (!products.length) return topic;
   const cats = [...new Set(products.map((p) => p.category).filter(Boolean))];
   if (cats.length === 0) return topic;
   if (cats.length === 1) return cats[0];
   return cats.join(" and ");
+}
+
+// Removes stray control characters (null bytes etc.) that occasionally show
+// up in LLM output and otherwise break YAML frontmatter parsing.
+function sanitizeMarkdown(text) {
+  return text.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "").trim();
+}
+
+// Safely inserts extra frontmatter fields into an already-generated
+// markdown string. Tries a full YAML parse/stringify first (cleanest
+// output); if that fails for any reason (malformed YAML from the model),
+// falls back to splicing the fields directly into the frontmatter block
+// as plain text so a single bad article never crashes the whole pipeline.
+function addFrontmatterFields(markdown, extraFields) {
+  try {
+    const parsed = matter(markdown + "\n");
+    Object.assign(parsed.data, extraFields);
+    return matter.stringify(parsed.content, parsed.data);
+  } catch (err) {
+    console.warn(`Could not cleanly parse frontmatter (${err.message}) — inserting fields manually instead.`);
+    const lines = Object.entries(extraFields)
+      .filter(([, v]) => v !== undefined && v !== null)
+      .map(([k, v]) => `${k}: ${JSON.stringify(v)}`);
+    const closingDelimIndex = markdown.startsWith("---") ? markdown.indexOf("\n---", 3) : -1;
+    if (closingDelimIndex !== -1) {
+      return (
+        markdown.slice(0, closingDelimIndex) +
+        "\n" +
+        lines.join("\n") +
+        markdown.slice(closingDelimIndex)
+      );
+    }
+    // No recognizable frontmatter block at all — prepend a fresh one.
+    return `---\n${lines.join("\n")}\n---\n\n${markdown}`;
+  }
 }
 
 async function main() {
@@ -185,16 +215,15 @@ Requirements:
 - Output ONLY the frontmatter + markdown. No preamble, no code fences.`;
 
   console.log(`Generating article for topic: ${topic}`);
-  const articleMd = await callGemini(prompt);
+  const rawArticleMd = await callGemini(prompt);
+  const articleMd = sanitizeMarkdown(rawArticleMd);
 
   const titleMatch = articleMd.match(/title:\s*"(.*?)"/);
   const title = titleMatch ? titleMatch[1] : topic;
   const slug = slugify(title);
 
-  // Use a real, human-verified product photo if this article ended up
-  // recommending exactly one product that has one on file. If not, no
-  // photo is used for this article — no stock/generic image fallback.
   const referencedProducts = products.filter((p) => articleMd.includes(p.url));
+
   let image = null;
   if (referencedProducts.length === 1 && referencedProducts[0].image) {
     console.log(`Using the real product photo for: ${referencedProducts[0].name}`);
@@ -208,20 +237,28 @@ Requirements:
   const imageSubject = imageSubjectFor(referencedProducts, topic);
   const format = referencedProducts.length >= 2 ? "comparison" : "review";
 
-  const parsed = matter(articleMd.trim() + "\n");
-  parsed.data.shop_category = shopCategory;
-  parsed.data.image_subject = imageSubject;
-  parsed.data.format = format;
-  if (image) {
-    parsed.data.image = image.url;
-    if (image.credit) parsed.data.image_credit = image.credit;
+  const extraFields = {
+    shop_category: shopCategory,
+    image_subject: imageSubject,
+    format,
+  };
+  if (format === "comparison" && !image) {
+    extraFields.compare_products = referencedProducts.slice(0, 2).map((p) => ({
+      name: p.name,
+      category: p.category,
+    }));
   }
-  const finalMd = matter.stringify(parsed.content, parsed.data);
+  if (image) {
+    extraFields.image = image.url;
+    if (image.credit) extraFields.image_credit = image.credit;
+  }
+
+  const finalMd = addFrontmatterFields(articleMd, extraFields).trim() + "\n";
 
   fs.mkdirSync(ARTICLES_DIR, { recursive: true });
   fs.writeFileSync(path.join(ARTICLES_DIR, `${slug}.md`), finalMd);
   console.log(
-    `Wrote content/articles/${slug}.md (${format}${image ? ", with real product photo" : ", AI reference image"})`
+    `Wrote content/articles/${slug}.md (${format}${image ? ", with real product photo" : format === "comparison" ? ", vs-style AI images" : ", AI reference image"})`
   );
 }
 
