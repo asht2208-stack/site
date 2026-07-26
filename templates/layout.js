@@ -45,15 +45,19 @@ function header() {
   </header>`;
 }
 
-function footer() {
+function footer(comingSoonText) {
+  const comingSoonHtml = comingSoonText
+    ? `<div class="coming-soon">📦 Coming soon: our guide on <span class="coming-soon-pulse">${comingSoonText}</span></div>`
+    : "";
   return `<footer class="site-footer">
   <div class="wrap">
+    ${comingSoonHtml}
     <p>© ${new Date().getFullYear()} ${SITE_NAME}. As an Amazon Associate we earn from qualifying purchases. See <a href="about.html">disclosure</a>.</p>
   </div>
 </footer>`;
 }
 
-export function pageShell({ title, description, bodyHtml, extraScript = "" }) {
+export function pageShell({ title, description, bodyHtml, extraScript = "", comingSoonText = "" }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,7 +66,7 @@ ${head(title, description)}
 <body>
 ${header()}
 ${bodyHtml}
-${footer()}
+${footer(comingSoonText)}
 ${extraScript}
 </body>
 </html>`;

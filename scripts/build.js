@@ -49,6 +49,15 @@ function shopPicksHtml(products) {
 
 const shopPicksBlock = shopPicksHtml(productsData.products || []);
 
+// ---------- Coming soon teaser (public, reader-facing, no internal notes) ----------
+const PENDING_PATH = path.join(ROOT, "content/products-pending.json");
+const pendingData = fs.existsSync(PENDING_PATH)
+  ? JSON.parse(fs.readFileSync(PENDING_PATH, "utf-8"))
+  : { current: null };
+const comingSoonText = pendingData.current?.suggested_name
+  ? pendingData.current.suggested_name.replace(/^(a|an|the)\s+/i, "")
+  : "";
+
 function readTimeFor(markdown) {
   const words = markdown.trim().split(/\s+/).length;
   return `${Math.max(1, Math.round(words / 200))} min read`;
@@ -182,7 +191,7 @@ for (const a of articles) {
 </div>`;
   fs.writeFileSync(
     path.join(DOCS_ARTICLES_DIR, `${a.slug}.html`),
-    pageShell({ title: `${a.title} — ${SITE_NAME}`, description: a.excerpt, bodyHtml: body })
+    pageShell({ title: `${a.title} — ${SITE_NAME}`, description: a.excerpt, bodyHtml: body, comingSoonText })
   );
 }
 
@@ -253,6 +262,7 @@ fs.writeFileSync(
     description: SITE_TAGLINE,
     bodyHtml: indexBody,
     extraScript: searchScript,
+    comingSoonText,
   })
 );
 
@@ -275,7 +285,7 @@ const aboutBody = `<div class="wrap-narrow">
 </div>`;
 fs.writeFileSync(
   path.join(DOCS_DIR, "about.html"),
-  pageShell({ title: `About — ${SITE_NAME}`, description: "About and affiliate disclosure", bodyHtml: aboutBody })
+  pageShell({ title: `About — ${SITE_NAME}`, description: "About and affiliate disclosure", bodyHtml: aboutBody, comingSoonText })
 );
 
 // ---------- robots.txt + sitemap.xml ----------

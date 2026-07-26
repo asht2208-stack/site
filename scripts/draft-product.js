@@ -49,13 +49,18 @@ async function main() {
   const existingData = loadJsonSafe(PRODUCTS_PATH, { products: [] });
   const existingNames = existingData.products.map((p) => p.name).join(", ");
 
-  const pendingData = loadJsonSafe(PENDING_PATH, { pending: [] });
-  const pendingNames = pendingData.pending.map((p) => p.suggested_name).join(", ");
+  const pendingData = loadJsonSafe(PENDING_PATH, { current: null, skipped_names: [] });
+  const skippedNames = pendingData.skipped_names || [];
+  // If yesterday's suggestion was never actioned, remember its name so we
+  // don't just suggest the exact same thing again, then let it go.
+  if (pendingData.current?.suggested_name) {
+    skippedNames.push(pendingData.current.suggested_name);
+  }
+  const avoidNames = [existingNames, skippedNames.join(", ")].filter(Boolean).join(", ");
 
   const prompt = `You help find product ideas for a niche site called "The Compact Office", which covers compact desks, chairs, storage, and organization products for small home offices, apartments, dorms, and shared rooms, for a USA audience.
 
-Products already added: ${existingNames || "none yet"}
-Products already suggested and awaiting review: ${pendingNames || "none yet"}
+Products already added or already suggested recently: ${avoidNames || "none yet"}
 
 Suggest ONE genuinely popular, well-reviewed, currently-available product category item that would fit this niche and isn't already listed above (e.g. a specific type of compact desk, chair, monitor arm, storage cart, cable organizer, etc — a general product idea, not a fabricated specific model you aren't certain is real).
 
@@ -83,13 +88,17 @@ Respond ONLY in this exact JSON format, no other text:
 
   suggestion.status = "pending_review";
   suggestion.note =
-    "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag. Delete this entry once handled.";
+    "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.";
   suggestion.suggested_on = new Date().toISOString().slice(0, 10);
 
-  pendingData.pending = pendingData.pending || [];
-  pendingData.pending.push(suggestion);
-  fs.writeFileSync(PENDING_PATH, JSON.stringify(pendingData, null, 2) + "\n");
-  console.log(`Added a pending suggestion to content/products-pending.json: ${suggestion.suggested_name}`);
+  // Keep only the last 10 skipped names so this list doesn't grow forever.
+  const trimmedSkipped = skippedNames.slice(-10);
+
+  fs.writeFileSync(
+    PENDING_PATH,
+    JSON.stringify({ current: suggestion, skipped_names: trimmedSkipped }, null, 2) + "\n"
+  );
+  console.log(`Today's suggestion: ${suggestion.suggested_name}`);
 }
 
 main().catch((err) => {

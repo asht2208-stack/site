@@ -597,6 +597,30 @@ p{ margin:0 0 1em; color:var(--text-dim); }
 
 .site-footer a{ color:var(--text-dim); }
 
+.coming-soon{
+  text-align:center;
+  padding:16px 0 20px;
+  font-size:.88rem;
+  color:var(--text-dim);
+  border-bottom:1px solid var(--border);
+  margin-bottom:16px;
+}
+
+.coming-soon-pulse{
+  color:var(--accent);
+  font-weight:700;
+  animation:comingSoonPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes comingSoonPulse{
+  0%, 100% { opacity: 1; }
+  50% { opacity: .45; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .coming-soon-pulse{ animation: none; }
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 860px){
