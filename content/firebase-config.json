@@ -1,0 +1,5 @@
+{
+  "_instructions": "Values come from Firebase Console -> Project Settings -> Your apps -> the web app config object. Only projectId and apiKey are needed.",
+  "projectId": "YOUR_FIREBASE_PROJECT_ID",
+  "apiKey": "YOUR_FIREBASE_WEB_API_KEY"
+}
