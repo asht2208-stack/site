@@ -1,5 +1,5 @@
 {
-  "_instructions": "This is the ONLY source of truth for products the AI is allowed to recommend. Add a real Amazon product here (with your real affiliate tag in the url) before the generator can write about it. category_slug must match a slug from content/categories.json — this controls which category page the product appears on. subcategory must match one of that category's subcategories EXACTLY (used for display grouping). Replace YOURTAG-20 with your real Amazon Associates tracking ID. OPTIONAL: while you're on the product's Amazon page verifying price/specs, you can also right-click its main photo -> 'Copy image address' and paste that URL into the optional 'image' field below. When you do, articles recommending that specific product will use the real product photo. If you skip it, that article will simply show no photo (a plain placeholder) — there is no generic stock photo fallback, only real verified product photos are used.",
+  "_instructions": "This is the ONLY source of truth for products the AI is allowed to recommend. Add a real Amazon product here (with your real affiliate tag in the url) before the generator can write about it. category_slug must match a slug from content/categories.json. subcategory must match one of that category's subcategories EXACTLY. specs is a structured key-value object — use the SAME keys across products in the same category (e.g. always 'Weight Capacity', 'Material', 'Warranty') so comparison tables line up cleanly. Replace YOURTAG-20 with your real Amazon Associates tracking ID. OPTIONAL: right-click the product's main Amazon photo -> 'Copy image address' and paste into 'image' to use a real photo instead of an AI reference image.",
   "products": [
     {
       "id": "monomi-compact-standing-desk",
@@ -9,7 +9,13 @@
       "subcategory": "Standing Desks",
       "footprint": "35in x 20in one-piece desktop, height adjustable 28.3in-46.5in, fits against a wall in a small bedroom or corner",
       "price_range": "$125-$140",
-      "key_specs": ["electric height adjust 28.3in-46.5in", "anti-collision safety system", "3 memory height presets", "fits a dual-monitor setup or laptop plus monitor", "under 30 minute single-person assembly"],
+      "specs": {
+        "Desktop Size": "35in x 20in",
+        "Height Range": "28.3in - 46.5in",
+        "Adjustment": "Electric, 3 memory presets",
+        "Safety Feature": "Anti-collision system",
+        "Assembly Time": "Under 30 min"
+      },
       "url": "https://www.amazon.com/dp/B0GSVK5S35?tag=compactoffi0a-20",
       "image": ""
     },
@@ -21,7 +27,13 @@
       "subcategory": "Power Strips",
       "footprint": "flat ultra-thin plug (0.3in) fits behind furniture, 10ft cord, wall or desk mountable",
       "price_range": "$12.98",
-      "key_specs": ["8 AC outlets", "4 USB ports (2 USB-C, 15W total)", "1050 Joules surge protection", "45-degree angled flat plug", "wall/desk mountable"],
+      "specs": {
+        "AC Outlets": "8",
+        "USB Ports": "4 (2 USB-C, 15W total)",
+        "Surge Protection": "1050 Joules",
+        "Cord Length": "10 ft",
+        "Plug Type": "45-degree flat plug"
+      },
       "url": "https://amzn.to/4w0rNCE",
       "image": ""
     },
@@ -33,7 +45,13 @@
       "subcategory": "Monitor Arms",
       "footprint": "clamp or grommet base, fits desks 0.4in-3in thick, frees up desk surface space",
       "price_range": "$19.98",
-      "key_specs": ["fits 13\"-32\" screens up to 17.6 lbs", "full-motion tilt/swivel/rotate", "VESA 75x75mm or 100x100mm", "built-in cable routing", "~10 min assembly"],
+      "specs": {
+        "Screen Size Support": "13in - 32in",
+        "Weight Capacity": "17.6 lbs",
+        "Mount Type": "VESA 75x75mm / 100x100mm",
+        "Movement": "Tilt, swivel, rotate",
+        "Assembly Time": "~10 min"
+      },
       "url": "https://amzn.to/3RyK5fN",
       "image": ""
     },
@@ -45,7 +63,15 @@
       "subcategory": "Office Chairs",
       "footprint": "26.37in D x 26.37in W x 49.8in H, flip-up armrests save space in tight corners",
       "price_range": "$149.99",
-      "key_specs": ["adjustable lumbar support and headrest", "breathable mesh back", "reclining function", "flip-up armrests", "supports up to 300 lbs", "5-year warranty"],
+      "specs": {
+        "Weight Capacity": "300 lbs",
+        "Lumbar Support": "Adjustable",
+        "Headrest": "Adjustable",
+        "Material": "Breathable mesh back",
+        "Armrests": "Flip-up",
+        "Recline": "Yes",
+        "Warranty": "5 years"
+      },
       "url": "https://amzn.to/44PJlWM",
       "image": ""
     },
@@ -57,7 +83,15 @@
       "subcategory": "Office Chairs",
       "footprint": "flip-up armrests to tuck under any desk, compact for small rooms",
       "price_range": "$99.99",
-      "key_specs": ["adjustable 3D lumbar pillow", "90-120 degree rocking with lock", "4in height adjustment", "5-point base supports up to 330 lbs", "5-year warranty"],
+      "specs": {
+        "Weight Capacity": "330 lbs",
+        "Lumbar Support": "3D adjustable pillow",
+        "Headrest": "Not included",
+        "Material": "Mesh",
+        "Armrests": "Flip-up",
+        "Recline": "90-120° with lock",
+        "Warranty": "5 years"
+      },
       "url": "https://amzn.to/44OIuWu",
       "image": ""
     }

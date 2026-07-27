@@ -49,7 +49,7 @@ async function replenishTopics() {
 Here are topics already used or queued (do not repeat these or anything too similar):
 ${existing}
 
-Generate 20 new topic ideas for future articles, in the same style (short, specific, practical, each focused on one aspect of small-space home offices — desks, chairs, storage, lighting, cables, soundproofing, dual-use furniture, small-room layouts, budget setups, dorm setups, etc). Whenever two products of the same general type exist (e.g. two office chairs, two printers, two monitors), prioritize topics that directly compare them (e.g. "Office Chair A vs Office Chair B: Which Fits a Small Room Better").
+Generate 20 new topic ideas for future articles, in the same style (short, specific, practical, each focused on one aspect of small-space home offices — desks, chairs, storage, lighting, cables, soundproofing, dual-use furniture, small-room layouts, budget setups, dorm setups, etc). Whenever two or three products of the same general type exist (e.g. office chairs, printers, monitors), prioritize topics that directly compare them.
 
 Output ONLY a plain list, one topic per line, no numbering, no bullets, no extra commentary.`;
   const text = await callGemini(prompt);
@@ -145,6 +145,30 @@ function addFrontmatterFields(markdown, extraFields) {
   }
 }
 
+// Builds a clean, deterministic Markdown comparison table directly from
+// structured product data — NOT left to the AI to format, so numbers and
+// alignment are always exactly right regardless of model output quality.
+// Only includes spec rows that at least one compared product actually has,
+// keeping the table relevant rather than padded with empty cells.
+function buildComparisonTable(products) {
+  const allKeys = [];
+  for (const p of products) {
+    for (const key of Object.keys(p.specs || {})) {
+      if (!allKeys.includes(key)) allKeys.push(key);
+    }
+  }
+
+  const header = `| Spec | ${products.map((p) => p.name).join(" | ")} |`;
+  const divider = `|---|${products.map(() => "---").join("|")}|`;
+  const priceRow = `| Price | ${products.map((p) => p.price_range).join(" | ")} |`;
+  const specRows = allKeys.map((key) => {
+    const cells = products.map((p) => p.specs?.[key] || "—");
+    return `| ${key} | ${cells.join(" | ")} |`;
+  });
+
+  return [header, divider, priceRow, ...specRows].join("\n");
+}
+
 async function main() {
   const products = loadProducts();
   if (products.length === 0) {
@@ -163,11 +187,29 @@ async function main() {
   const productBlock = products
     .map(
       (p) =>
-        `- id: ${p.id} | name: ${p.name} | category: ${p.category} | footprint: ${p.footprint} | price: ${p.price_range} | specs: ${p.key_specs.join(
-          ", "
+        `- id: ${p.id} | name: ${p.name} | category: ${p.category} | footprint: ${p.footprint} | price: ${p.price_range} | specs: ${JSON.stringify(
+          p.specs || {}
         )} | url: ${p.url}`
     )
     .join("\n");
+
+  // Detect same-category groups up to 3 products, so the article can
+  // compare 2 or 3 items side by side depending on what's actually
+  // available in the same category right now.
+  const byCategory = {};
+  for (const p of products) {
+    if (!byCategory[p.category]) byCategory[p.category] = [];
+    byCategory[p.category].push(p);
+  }
+  const comparableGroup = Object.values(byCategory).find((group) => group.length >= 2);
+  const compareCandidates = comparableGroup ? comparableGroup.slice(0, 3) : [];
+
+  let comparisonTableBlock = "";
+  if (compareCandidates.length >= 2) {
+    comparisonTableBlock = `\n\nIf this topic is a genuine comparison of these products, you MUST use this EXACT pre-built comparison table verbatim as the "Quick Comparison" section (do not alter numbers, rows, or formatting):\n\n${buildComparisonTable(
+      compareCandidates
+    )}`;
+  }
 
   const prompt = `You are writing one article for a niche site called "The Compact Office", which helps people in the USA set up a real, functional home office in a small apartment, dorm, or shared room.
 
@@ -175,6 +217,7 @@ Topic for this article: "${topic}"
 
 You may ONLY recommend products from this exact list (do not invent products, prices, or specs — use only what's given):
 ${productBlock}
+${comparisonTableBlock}
 
 Write the article as Markdown with YAML frontmatter in exactly this format:
 
@@ -191,9 +234,9 @@ Requirements:
 - 700-1200 words, USA audience, practical and specific to small spaces.
 - Use H2 sections.
 - DECIDE THE FORMAT FIRST:
-  - If two or more products from the list above share the SAME category (e.g. two office chairs, two printers, two monitors), you MUST write this as a COMPARISON + REVIEW article: start with an H2 "Quick Comparison" section containing a Markdown table with columns Product | Price | Key Specs | Best For, using only the compared products. After the table, include a separate pick block (format below) for EACH compared product, then continue with prose sections reviewing each in more depth.
+  - If two or three products from the list above share the SAME category (e.g. two or three office chairs, printers, monitors), you MUST write this as a COMPARISON + REVIEW article: start with an H2 "Quick Comparison" section using the EXACT pre-built table provided above if one was given. After the table, include a separate pick block (format below) for EACH compared product, then continue with prose sections reviewing each in more depth.
   - If only one product from the list genuinely fits, write a single in-depth REVIEW article with one pick block for that product.
-  - If none of the provided products genuinely fit this topic, say so plainly in the article rather than forcing a mismatched recommendation, and skip the pick block(s) entirely.
+  - If none of the provided products genuinely fit this topic, say so plainly rather than forcing a mismatched recommendation, and skip the pick block(s) entirely.
 - For each product you recommend, insert this exact HTML block once, at the point where you first introduce it (fill in the values from the matching product):
 <div class="pick">
   <div class="label">Recommended pick</div>
@@ -201,7 +244,7 @@ Requirements:
   <p>One or two sentences on why it fits, using only the specs given.</p>
   <a class="buy" href="PRODUCT URL" rel="nofollow sponsored" target="_blank">Check price on Amazon</a>
 </div>
-- After a product's pick block, you will likely mention its name again naturally in later paragraphs (e.g. "The Monomi desk stands out because..."). Whenever you do, write that mention as an inline HTML link to the exact same product URL, in exactly this form: <a href="PRODUCT URL" rel="nofollow sponsored" target="_blank">Monomi Small Electric Standing Desk</a>. Do this for genuine, naturally-occurring mentions only — do not add extra sentences or paragraphs just to create more links, and do not link generic words like "desk" or "it," only the actual product name.
+- After a product's pick block, you will likely mention its name again naturally in later paragraphs. Whenever you do, write that mention as an inline HTML link to the exact same product URL, in exactly this form: <a href="PRODUCT URL" rel="nofollow sponsored" target="_blank">Product Name</a>. Do this for genuine, naturally-occurring mentions only.
 - Do not make medical, legal, or guaranteed-outcome claims.
 - Do not fabricate reviews, ratings, or sales figures.
 - Output ONLY the frontmatter + markdown. No preamble, no code fences.`;
@@ -228,13 +271,12 @@ Requirements:
   const shopCategory = modeCategorySlug(referencedProducts.length ? referencedProducts : products);
   const imageSubject = imageSubjectFor(referencedProducts, topic);
 
-  // Force comparison format whenever 2+ referenced products share the same
-  // product category — rather than leaving it to chance based on how the
-  // topic was phrased or how the model interpreted it.
-  const hasComparableCategory =
+  // Force comparison format whenever 2-3 referenced products share the
+  // same category, and record ALL of them (not just 2) for the vs-image layout.
+  const sameCategoryReferenced =
     referencedProducts.length >= 2 &&
-    referencedProducts[0].category === referencedProducts[1]?.category;
-  const format = hasComparableCategory ? "comparison" : "review";
+    referencedProducts.every((p) => p.category === referencedProducts[0].category);
+  const format = sameCategoryReferenced ? "comparison" : "review";
 
   const extraFields = {
     shop_category: shopCategory,
@@ -242,7 +284,7 @@ Requirements:
     format,
   };
   if (format === "comparison" && !image) {
-    extraFields.compare_products = referencedProducts.slice(0, 2).map((p) => ({
+    extraFields.compare_products = referencedProducts.slice(0, 3).map((p) => ({
       name: p.name,
       category: p.category,
     }));
@@ -257,7 +299,7 @@ Requirements:
   fs.mkdirSync(ARTICLES_DIR, { recursive: true });
   fs.writeFileSync(path.join(ARTICLES_DIR, `${slug}.md`), finalMd);
   console.log(
-    `Wrote content/articles/${slug}.md (${format}${image ? ", with real product photo" : format === "comparison" ? ", vs-style AI images" : ", AI reference image"})`
+    `Wrote content/articles/${slug}.md (${format}${image ? ", with real product photo" : format === "comparison" ? `, ${extraFields.compare_products?.length || 0}-way vs-style AI images` : ", AI reference image"})`
   );
 }
 

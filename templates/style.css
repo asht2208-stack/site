@@ -312,7 +312,7 @@ p{ margin:0 0 1em; color:var(--text-dim); }
   overflow:hidden;
 }
 
-/* ---------- AI reference badge (kept intentionally small/subtle) ---------- */
+/* ---------- AI reference badge ---------- */
 
 .ai-badge{
   position:absolute;
@@ -347,17 +347,22 @@ p{ margin:0 0 1em; color:var(--text-dim); }
   text-align:right;
 }
 
-/* ---------- Vs comparison block ---------- */
+/* ---------- Vs comparison block (supports 2 or 3 items) ---------- */
 
 .vs-compare{
   display:flex;
   align-items:center;
-  gap:14px;
+  gap:12px;
   margin:24px 0 8px;
+}
+
+.vs-compare-3 .vs-item{
+  min-height:170px;
 }
 
 .vs-item{
   flex:1;
+  min-width:0;
   position:relative;
   min-height:200px;
   border-radius:var(--radius);
@@ -387,21 +392,22 @@ p{ margin:0 0 1em; color:var(--text-dim); }
   bottom:0;
   background:linear-gradient(to top, rgba(10,12,16,.92), transparent);
   color:var(--text);
-  font-size:.82rem;
+  font-size:.8rem;
   font-weight:700;
-  padding:22px 14px 10px;
+  padding:22px 12px 10px;
   text-align:center;
+  line-height:1.3;
 }
 
 .vs-badge{
   flex:0 0 auto;
-  width:44px;
-  height:44px;
+  width:38px;
+  height:38px;
   border-radius:50%;
   background:var(--accent);
   color:#04222a;
   font-weight:800;
-  font-size:.78rem;
+  font-size:.72rem;
   letter-spacing:.03em;
   display:flex;
   align-items:center;
@@ -412,7 +418,7 @@ p{ margin:0 0 1em; color:var(--text-dim); }
 
 @media (max-width: 640px){
   .vs-compare{ flex-direction:column; }
-  .vs-badge{ order:2; margin: -8px 0; }
+  .vs-badge{ order:2; margin: -6px 0; }
   .vs-item{ width:100%; }
 }
 
@@ -555,7 +561,7 @@ p{ margin:0 0 1em; color:var(--text-dim); }
   padding:24px 0;
 }
 
-/* ---------- Sidebar (Trending / Shop Our Picks module) ---------- */
+/* ---------- Sidebar (Trending / Shop Our Picks) ---------- */
 
 .sidebar-box{
   background:var(--bg-card);
@@ -595,7 +601,7 @@ p{ margin:0 0 1em; color:var(--text-dim); }
 
 .sidebar-item .meta{ font-size:.72rem; }
 
-/* ---------- Category strip (legacy, still used on homepage) ---------- */
+/* ---------- Category strip ---------- */
 
 .category-strip{
   display:flex;
@@ -658,24 +664,47 @@ p{ margin:0 0 1em; color:var(--text-dim); }
 
 .body a{ color:var(--accent); }
 
+/* Clean, readable spec comparison table */
 .body table{
   width:100%;
   border-collapse:collapse;
   margin:1.4em 0;
-  font-size:.92rem;
+  font-size:.9rem;
+  border-radius:10px;
+  overflow:hidden;
+  border:1px solid var(--border);
 }
 
 .body th, .body td{
-  border:1px solid var(--border);
-  padding:10px 12px;
+  border-bottom:1px solid var(--border);
+  padding:11px 14px;
   text-align:left;
   color:var(--text-dim);
 }
 
+.body tr:last-child td{ border-bottom:none; }
+
 .body th{
   color:var(--text);
-  background:var(--bg-card);
+  background:var(--bg-elevated);
   font-weight:700;
+  font-size:.85rem;
+}
+
+.body td:first-child, .body th:first-child{
+  color:var(--text);
+  font-weight:600;
+  background:var(--bg-card);
+  white-space:nowrap;
+}
+
+.body tr:nth-child(even) td{
+  background:rgba(255,255,255,.02);
+}
+
+@media (max-width: 640px){
+  .body table{ font-size:.8rem; }
+  .body th, .body td{ padding:8px 10px; }
 }
 
 .disclosure-note{
@@ -734,7 +763,7 @@ p{ margin:0 0 1em; color:var(--text-dim); }
   background:#5eead4;
 }
 
-/* ---------- Shop Our Picks module (sidebar + end of articles) ---------- */
+/* ---------- Shop Our Picks module ---------- */
 
 .shop-picks{
   margin-top:20px;
