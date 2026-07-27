@@ -109,6 +109,199 @@
 
     <p class="disclosure-note">As an Amazon Associate, this site earns from qualifying purchases made through links above, at no extra cost to you. See our <a href="about.html">full disclosure</a>.</p>
   </article>
+  <div class="reviews-section">
+  <div class="section-head"><h2>Reader Ratings &amp; Reviews</h2></div>
+  <div class="reviews-summary" id="reviews-summary-best-noise-cancelling-headphones-for-open-plan-apartments-what-to-look-for">
+    <div class="reviews-summary-loading">Loading reviews…</div>
+  </div>
+  <div class="reviews-list" id="reviews-list-best-noise-cancelling-headphones-for-open-plan-apartments-what-to-look-for"></div>
+
+  <div class="review-form-box" id="review-form-box-best-noise-cancelling-headphones-for-open-plan-apartments-what-to-look-for">
+    <div class="review-form-title">Leave a rating &amp; review</div>
+    <div class="star-input" id="star-input-best-noise-cancelling-headphones-for-open-plan-apartments-what-to-look-for">
+      <span class="star-input-star" data-value="1">★</span>
+      <span class="star-input-star" data-value="2">★</span>
+      <span class="star-input-star" data-value="3">★</span>
+      <span class="star-input-star" data-value="4">★</span>
+      <span class="star-input-star" data-value="5">★</span>
+    </div>
+    <input type="text" id="review-name-best-noise-cancelling-headphones-for-open-plan-apartments-what-to-look-for" class="review-input" placeholder="Name (optional)" maxlength="60">
+    <textarea id="review-comment-best-noise-cancelling-headphones-for-open-plan-apartments-what-to-look-for" class="review-input review-textarea" placeholder="What did you think? (required)" maxlength="1000"></textarea>
+    <button type="button" id="review-submit-best-noise-cancelling-headphones-for-open-plan-apartments-what-to-look-for" class="btn-primary">Submit Review</button>
+    <div class="review-form-msg" id="review-form-msg-best-noise-cancelling-headphones-for-open-plan-apartments-what-to-look-for"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var FIREBASE_PROJECT_ID = "";
+  var FIREBASE_API_KEY = "";
+  var SLUG = "best-noise-cancelling-headphones-for-open-plan-apartments-what-to-look-for";
+  var BASE_URL = "https://firestore.googleapis.com/v1/projects/" + FIREBASE_PROJECT_ID + "/databases/(default)/documents/articles/" + SLUG + "/reviews";
+
+  var summaryEl = document.getElementById("reviews-summary-" + SLUG);
+  var listEl = document.getElementById("reviews-list-" + SLUG);
+  var starInput = document.getElementById("star-input-" + SLUG);
+  var stars = starInput ? starInput.querySelectorAll(".star-input-star") : [];
+  var nameInput = document.getElementById("review-name-" + SLUG);
+  var commentInput = document.getElementById("review-comment-" + SLUG);
+  var submitBtn = document.getElementById("review-submit-" + SLUG);
+  var msgEl = document.getElementById("review-form-msg-" + SLUG);
+  var formBox = document.getElementById("review-form-box-" + SLUG);
+
+  if (!FIREBASE_PROJECT_ID || !FIREBASE_API_KEY) {
+    if (summaryEl) summaryEl.innerHTML = '<div class="reviews-summary-loading">Reviews are not set up yet.</div>';
+    if (formBox) formBox.style.display = "none";
+    return;
+  }
+
+  var currentRating = 0;
+
+  function setStars(value){
+    currentRating = value;
+    for (var i = 0; i < stars.length; i++){
+      var v = parseInt(stars[i].getAttribute("data-value"), 10);
+      if (v <= value) { stars[i].classList.add("filled"); }
+      else { stars[i].classList.remove("filled"); }
+    }
+  }
+
+  for (var i = 0; i < stars.length; i++){
+    stars[i].addEventListener("click", function(e){
+      setStars(parseInt(e.target.getAttribute("data-value"), 10));
+    });
+  }
+
+  function starsHtml(rating, size){
+    var out = "";
+    for (var i = 1; i <= 5; i++){
+      out += '<span class="static-star' + (i <= Math.round(rating) ? ' filled' : '') + (size ? ' ' + size : '') + '">★</span>';
+    }
+    return out;
+  }
+
+  function renderReviews(reviews){
+    if (!reviews.length){
+      summaryEl.innerHTML = '<div class="reviews-summary-empty">No reviews yet — be the first to share your experience.</div>';
+      listEl.innerHTML = "";
+      return;
+    }
+    var total = 0;
+    for (var i = 0; i < reviews.length; i++) total += reviews[i].rating;
+    var avg = total / reviews.length;
+    summaryEl.innerHTML =
+      '<div class="reviews-avg-number">' + avg.toFixed(1) + '</div>' +
+      '<div class="reviews-avg-stars">' + starsHtml(avg, "lg") + '</div>' +
+      '<div class="reviews-avg-count">' + reviews.length + ' review' + (reviews.length === 1 ? '' : 's') + '</div>';
+
+    reviews.sort(function(a,b){ return (b.createdAt || "").localeCompare(a.createdAt || ""); });
+
+    listEl.innerHTML = reviews.map(function(r){
+      var d = r.createdAt ? new Date(r.createdAt) : null;
+      var dateStr = (d && !isNaN(d)) ? d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "";
+      var safeName = (r.name || "Anonymous").replace(/</g, "&lt;");
+      var safeComment = (r.comment || "").replace(/</g, "&lt;");
+      return '<div class="review-item">' +
+        '<div class="review-item-head">' +
+          '<span class="review-item-name">' + safeName + '</span>' +
+          '<span class="review-item-stars">' + starsHtml(r.rating) + '</span>' +
+          '<span class="review-item-date">' + dateStr + '</span>' +
+        '</div>' +
+        '<p class="review-item-comment">' + safeComment + '</p>' +
+      '</div>';
+    }).join("");
+  }
+
+  function parseDoc(doc){
+    var f = doc.fields || {};
+    return {
+      rating: (f.rating && f.rating.integerValue) ? parseInt(f.rating.integerValue, 10) : 0,
+      name: (f.name && f.name.stringValue) ? f.name.stringValue : "",
+      comment: (f.comment && f.comment.stringValue) ? f.comment.stringValue : "",
+      createdAt: (f.createdAt && f.createdAt.timestampValue) ? f.createdAt.timestampValue : ""
+    };
+  }
+
+  function loadReviews(){
+    fetch(BASE_URL + "?pageSize=300&key=" + FIREBASE_API_KEY)
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        var docs = (data && data.documents) || [];
+        renderReviews(docs.map(parseDoc));
+      })
+      .catch(function(){
+        summaryEl.innerHTML = '<div class="reviews-summary-empty">Could not load reviews right now.</div>';
+      });
+  }
+
+  function alreadyReviewed(){
+    try { return localStorage.getItem("reviewed-" + SLUG) === "1"; } catch(e){ return false; }
+  }
+
+  function markReviewed(){
+    try { localStorage.setItem("reviewed-" + SLUG, "1"); } catch(e){}
+  }
+
+  if (alreadyReviewed() && formBox){
+    formBox.innerHTML = '<div class="review-form-msg review-form-msg-done">You already left a review for this guide. Thanks!</div>';
+  }
+
+  if (submitBtn) {
+    submitBtn.addEventListener("click", function(){
+      var comment = (commentInput.value || "").trim();
+      if (currentRating < 1 || currentRating > 5){
+        msgEl.textContent = "Please select a star rating.";
+        return;
+      }
+      if (!comment){
+        msgEl.textContent = "Please write a short review.";
+        return;
+      }
+      if (comment.length > 1000){
+        msgEl.textContent = "Review is too long (max 1000 characters).";
+        return;
+      }
+      var name = (nameInput.value || "").trim().slice(0, 60);
+
+      submitBtn.disabled = true;
+      msgEl.textContent = "Submitting…";
+
+      var body = {
+        fields: {
+          rating: { integerValue: String(currentRating) },
+          comment: { stringValue: comment },
+          createdAt: { timestampValue: new Date().toISOString() }
+        }
+      };
+      if (name) body.fields.name = { stringValue: name };
+
+      fetch(BASE_URL + "?key=" + FIREBASE_API_KEY, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      })
+        .then(function(res){
+          if (!res.ok) throw new Error("Request failed");
+          return res.json();
+        })
+        .then(function(){
+          markReviewed();
+          msgEl.textContent = "Thanks for your review!";
+          commentInput.value = "";
+          nameInput.value = "";
+          setStars(0);
+          submitBtn.disabled = true;
+          loadReviews();
+        })
+        .catch(function(){
+          msgEl.textContent = "Something went wrong submitting your review. Please try again.";
+          submitBtn.disabled = false;
+        });
+    });
+  }
+
+  loadReviews();
+})();
+</script>
   <div class="sidebar-box shop-picks">
   <div class="section-head" style="margin-bottom:12px;"><h2>Shop Our Picks</h2></div>
   <div class="shop-pick-item">
