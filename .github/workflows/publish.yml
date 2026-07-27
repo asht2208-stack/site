@@ -2,8 +2,8 @@ name: Generate and publish article
 
 on:
   schedule:
-    # Twice daily: 09:00 and 21:00 UTC
-    - cron: "0 9,21 * * *"
+    # Five times daily (UTC): 03:00, 08:00, 12:00, 16:00, 20:00
+    - cron: "0 3,8,12,16,20 * * *"
   workflow_dispatch: {}
 
 permissions:
@@ -28,8 +28,6 @@ jobs:
         run: npm run generate
 
       - name: Build site
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: npm run build
 
       - name: Commit and push

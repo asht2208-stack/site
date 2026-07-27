@@ -41,6 +41,7 @@ function header() {
       <nav class="main-nav">
         <a href="index.html">Home</a>
         <a href="about.html">About</a>
+        <a href="support.html">Buy a Coffee</a>
       </nav>
 
       <div class="header-search">
@@ -79,7 +80,7 @@ function footer(comingSoonText) {
   return `<footer class="site-footer">
   <div class="wrap">
     ${comingSoonHtml}
-    <p>© ${new Date().getFullYear()} ${SITE_NAME}. As an Amazon Associate we earn from qualifying purchases. See <a href="about.html">disclosure</a>.</p>
+    <p>© ${new Date().getFullYear()} ${SITE_NAME}. As an Amazon Associate we earn from qualifying purchases. See <a href="about.html">disclosure</a>. Enjoying the guides? <a href="support.html">Buy us a coffee</a>.</p>
   </div>
 </footer>`;
 }

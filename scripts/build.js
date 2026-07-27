@@ -27,8 +27,6 @@ const CATEGORIES_PATH = path.join(ROOT, "content/categories.json");
 // Your Ko-fi support page
 const BUY_ME_A_COFFEE_URL = "https://ko-fi.com/umk161918";
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-
 fs.mkdirSync(DOCS_ARTICLES_DIR, { recursive: true });
 fs.mkdirSync(AI_IMAGE_DIR, { recursive: true });
 fs.copyFileSync(path.join(ROOT, "templates/style.css"), path.join(DOCS_DIR, "style.css"));
@@ -88,6 +86,12 @@ function readTimeFor(markdown) {
   return `${Math.max(1, Math.round(words / 200))} min read`;
 }
 
+// ---------- AI reference image generation (Pollinations, free, no key) ----------
+// Prompts favor the ACTUAL product/subject over generic category terms, so
+// images look relatable to the specific item being discussed, not a
+// generic stock "home office" scene. A stable numeric seed (from the
+// article/product slug) plus a rotating composition angle keeps similar
+// products from all rendering as near-identical images.
 const COMPOSITION_VARIANTS = [
   "shot from a slightly elevated three-quarter angle",
   "shot straight-on at eye level",
@@ -109,40 +113,20 @@ function aiPromptFor(category, subject, variationKey) {
   const safeSubject = subject || category;
   const variant = COMPOSITION_VARIANTS[seedFromString(variationKey) % COMPOSITION_VARIANTS.length];
   return (
-    `A minimalist editorial photograph of a ${category.toLowerCase()}: ${safeSubject}. ` +
-    `${variant}. Small modern home office setting, clean tidy desk, soft natural window light, ` +
-    `neutral warm tones, photorealistic, no text, no logos, no brand names, no people, no watermarks.`
+    `professional product photograph of ${safeSubject}, a ${category.toLowerCase()}, ` +
+    `${variant}, placed in a small modern home office, clean tidy desk, soft natural window light, ` +
+    `neutral warm tones, photorealistic, sharp focus on the item, no text, no logos, no brand names, no people, no watermarks`
   );
 }
 
-async function generateAiImageOpenAI(prompt, destPath) {
-  if (!OPENAI_API_KEY) {
-    console.warn("OPENAI_API_KEY not set — skipping AI image generation.");
-    return false;
-  }
+async function generateAiImage(prompt, seed, destPath) {
+  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=800&height=450&nologo=true&seed=${seed}`;
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 60000);
+  const timeout = setTimeout(() => controller.abort(), 40000);
   try {
-    const res = await fetch("https://api.openai.com/v1/images/generations", {
-      method: "POST",
-      signal: controller.signal,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-image-1",
-        prompt,
-        size: "1024x1024",
-        quality: "low",
-        n: 1,
-      }),
-    });
-    if (!res.ok) throw new Error(`status ${res.status}: ${await res.text()}`);
-    const data = await res.json();
-    const b64 = data.data?.[0]?.b64_json;
-    if (!b64) throw new Error("no image data in response");
-    const buffer = Buffer.from(b64, "base64");
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) throw new Error(`status ${res.status}`);
+    const buffer = Buffer.from(await res.arrayBuffer());
     fs.writeFileSync(destPath, buffer);
     console.log(`Generated AI image: ${destPath}`);
     return true;
@@ -158,15 +142,15 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function ensureImage(prompt, destPath) {
+async function ensureImage(prompt, seed, destPath) {
   if (fs.existsSync(destPath)) return true;
-  let ok = await generateAiImageOpenAI(prompt, destPath);
+  let ok = await generateAiImage(prompt, seed, destPath);
   if (!ok) {
-    console.log("Retrying after a short cooldown...");
-    await sleep(10000);
-    ok = await generateAiImageOpenAI(prompt, destPath);
+    console.log("Retrying after rate-limit cooldown...");
+    await sleep(20000);
+    ok = await generateAiImage(prompt, seed, destPath);
   }
-  await sleep(3000);
+  await sleep(17000);
   return ok;
 }
 
@@ -211,8 +195,8 @@ for (const a of articles) {
     const rel1 = `images/ai/${a.slug}-a.jpg`;
     const rel2 = `images/ai/${a.slug}-b.jpg`;
 
-    const ok1 = await ensureImage(aiPromptFor(p1.category, p1.name, a.slug + "-a"), path1);
-    const ok2 = await ensureImage(aiPromptFor(p2.category, p2.name, a.slug + "-b"), path2);
+    const ok1 = await ensureImage(aiPromptFor(p1.category, p1.name, a.slug + "-a"), seedFromString(a.slug + "-a"), path1);
+    const ok2 = await ensureImage(aiPromptFor(p2.category, p2.name, a.slug + "-b"), seedFromString(a.slug + "-b"), path2);
 
     a.compareImages = [
       { src: ok1 ? rel1 : null, name: p1.name },
@@ -224,7 +208,7 @@ for (const a of articles) {
 
   const destPath = path.join(AI_IMAGE_DIR, `${a.slug}.jpg`);
   const relPath = `images/ai/${a.slug}.jpg`;
-  const ok = await ensureImage(aiPromptFor(a.category, a.imageSubject || a.title, a.slug), destPath);
+  const ok = await ensureImage(aiPromptFor(a.category, a.imageSubject || a.title, a.slug), seedFromString(a.slug), destPath);
   if (ok) {
     a.image = relPath;
     a.imageIsAI = true;
