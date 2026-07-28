@@ -1,15 +1,16 @@
 {
   "current": {
-    "suggested_name": "Monitor Light Bar Desk Lamp (Space-Saving Screenbar)",
-    "category": "lighting",
-    "why_it_fits": "Mounts directly on top of a monitor, providing glare-free desk illumination without taking up any precious surface area on a compact desk.",
-    "estimated_price_range": "$25-$50",
-    "search_hint": "monitor light bar desk lamp",
+    "suggested_name": "Clamp-On Under-Desk Slide-Out Storage Drawer",
+    "category": "storage",
+    "why_it_fits": "Most compact and standing desks lack built-in drawers, so a clamp-on organizer adds vital storage for office supplies without taking up surface area or requiring drilling.",
+    "estimated_price_range": "$20-$40",
+    "search_hint": "clamp on under desk drawer organizer",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-07-27"
+    "suggested_on": "2026-07-28"
   },
   "skipped_names": [
-    "Clamp-on under-desk cable management tray"
+    "Clamp-on under-desk cable management tray",
+    "Monitor Light Bar Desk Lamp (Space-Saving Screenbar)"
   ]
 }
