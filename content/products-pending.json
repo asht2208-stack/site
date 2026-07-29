@@ -1,16 +1,17 @@
 {
   "current": {
-    "suggested_name": "Clamp-On Under-Desk Slide-Out Storage Drawer",
+    "suggested_name": "Slim 3-tier rolling utility cart for office storage",
     "category": "storage",
-    "why_it_fits": "Most compact and standing desks lack built-in drawers, so a clamp-on organizer adds vital storage for office supplies without taking up surface area or requiring drilling.",
-    "estimated_price_range": "$20-$40",
-    "search_hint": "clamp on under desk drawer organizer",
+    "why_it_fits": "Provides vertical, mobile storage for office supplies and files without taking up precious desk surface space, and easily tucks beside or under compact desks.",
+    "estimated_price_range": "$25-$45",
+    "search_hint": "slim 3 tier rolling utility cart office storage",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-07-28"
+    "suggested_on": "2026-07-29"
   },
   "skipped_names": [
     "Clamp-on under-desk cable management tray",
-    "Monitor Light Bar Desk Lamp (Space-Saving Screenbar)"
+    "Monitor Light Bar Desk Lamp (Space-Saving Screenbar)",
+    "Clamp-On Under-Desk Slide-Out Storage Drawer"
   ]
 }
