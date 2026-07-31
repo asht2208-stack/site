@@ -1,18 +1,19 @@
 {
   "current": {
-    "suggested_name": "Clamp-on desk pegboard organizer panel",
-    "category": "storage",
-    "why_it_fits": "It maximizes vertical storage space directly above or below small desks without requiring wall drilling, making it ideal for renters, dorms, and limited desktop surfaces.",
-    "estimated_price_range": "$30-$60",
-    "search_hint": "clamp on desk pegboard organizer",
+    "suggested_name": "Wall-Mounted Drop-Leaf Floating Desk",
+    "category": "desk",
+    "why_it_fits": "It mounts directly to the wall and folds flat when not in use, preserving maximum floor space in tight studio apartments or small bedrooms.",
+    "estimated_price_range": "$45-$95",
+    "search_hint": "wall mounted drop leaf desk folding",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-07-30"
+    "suggested_on": "2026-07-31"
   },
   "skipped_names": [
     "Clamp-on under-desk cable management tray",
     "Monitor Light Bar Desk Lamp (Space-Saving Screenbar)",
     "Clamp-On Under-Desk Slide-Out Storage Drawer",
-    "Slim 3-tier rolling utility cart for office storage"
+    "Slim 3-tier rolling utility cart for office storage",
+    "Clamp-on desk pegboard organizer panel"
   ]
 }
