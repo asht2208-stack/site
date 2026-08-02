@@ -1,13 +1,13 @@
 {
   "current": {
-    "suggested_name": "Compact Armless Ergonomic Mesh Task Chair",
-    "category": "chair",
-    "why_it_fits": "Without fixed armrests to catch on desk edges, it slides completely under small 30-36 inch desks to maximize floor space when not in use.",
-    "estimated_price_range": "$45-$85",
-    "search_hint": "armless mesh desk chair compact small space",
+    "suggested_name": "Vertical Laptop Stand Holder for Desktop",
+    "category": "storage",
+    "why_it_fits": "It allows users to dock their laptop vertically while connected to an external monitor, reclaiming valuable desk surface area on small setups.",
+    "estimated_price_range": "$20-$40",
+    "search_hint": "vertical laptop stand holder adjustable desktop",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-08-01"
+    "suggested_on": "2026-08-02"
   },
   "skipped_names": [
     "Clamp-on under-desk cable management tray",
@@ -15,6 +15,7 @@
     "Clamp-On Under-Desk Slide-Out Storage Drawer",
     "Slim 3-tier rolling utility cart for office storage",
     "Clamp-on desk pegboard organizer panel",
-    "Wall-Mounted Drop-Leaf Floating Desk"
+    "Wall-Mounted Drop-Leaf Floating Desk",
+    "Compact Armless Ergonomic Mesh Task Chair"
   ]
 }
