@@ -1,13 +1,13 @@
 {
   "current": {
-    "suggested_name": "Vertical Laptop Stand Holder for Desktop",
-    "category": "storage",
-    "why_it_fits": "It allows users to dock their laptop vertically while connected to an external monitor, reclaiming valuable desk surface area on small setups.",
-    "estimated_price_range": "$20-$40",
-    "search_hint": "vertical laptop stand holder adjustable desktop",
+    "suggested_name": "Small Folding Computer Desk (No-Assembly Space Saver)",
+    "category": "desk",
+    "why_it_fits": "Folds completely flat to store away behind a door or under a bed when not in use, perfect for micro-apartments and multi-purpose rooms.",
+    "estimated_price_range": "$45-$85",
+    "search_hint": "small folding computer desk no assembly",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-08-02"
+    "suggested_on": "2026-08-03"
   },
   "skipped_names": [
     "Clamp-on under-desk cable management tray",
@@ -16,6 +16,7 @@
     "Slim 3-tier rolling utility cart for office storage",
     "Clamp-on desk pegboard organizer panel",
     "Wall-Mounted Drop-Leaf Floating Desk",
-    "Compact Armless Ergonomic Mesh Task Chair"
+    "Compact Armless Ergonomic Mesh Task Chair",
+    "Vertical Laptop Stand Holder for Desktop"
   ]
 }
