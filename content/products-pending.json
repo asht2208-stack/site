@@ -1,13 +1,13 @@
 {
   "current": {
-    "suggested_name": "Small Folding Computer Desk (No-Assembly Space Saver)",
-    "category": "desk",
-    "why_it_fits": "Folds completely flat to store away behind a door or under a bed when not in use, perfect for micro-apartments and multi-purpose rooms.",
-    "estimated_price_range": "$45-$85",
-    "search_hint": "small folding computer desk no assembly",
+    "suggested_name": "Compact Desktop Monitor Riser Shelf with Storage Drawers",
+    "category": "storage",
+    "why_it_fits": "It elevates the monitor to an ergonomic eye level while adding valuable vertical drawer storage for small office supplies on shallow desks.",
+    "estimated_price_range": "$25-$45",
+    "search_hint": "monitor riser stand with storage drawers compact",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-08-03"
+    "suggested_on": "2026-08-04"
   },
   "skipped_names": [
     "Clamp-on under-desk cable management tray",
@@ -17,6 +17,7 @@
     "Clamp-on desk pegboard organizer panel",
     "Wall-Mounted Drop-Leaf Floating Desk",
     "Compact Armless Ergonomic Mesh Task Chair",
-    "Vertical Laptop Stand Holder for Desktop"
+    "Vertical Laptop Stand Holder for Desktop",
+    "Small Folding Computer Desk (No-Assembly Space Saver)"
   ]
 }
