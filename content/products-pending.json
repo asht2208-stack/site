@@ -1,13 +1,13 @@
 {
   "current": {
-    "suggested_name": "Compact Desktop Monitor Riser Shelf with Storage Drawers",
+    "suggested_name": "Adjustable Screen Top Monitor Shelf Organizer",
     "category": "storage",
-    "why_it_fits": "It elevates the monitor to an ergonomic eye level while adding valuable vertical drawer storage for small office supplies on shallow desks.",
-    "estimated_price_range": "$25-$45",
-    "search_hint": "monitor riser stand with storage drawers compact",
+    "why_it_fits": "It utilizes unused space directly on top of a monitor to store small accessories, webcams, or decor without taking up any actual desk surface area.",
+    "estimated_price_range": "$10-$25",
+    "search_hint": "screen top shelf monitor organizer",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-08-04"
+    "suggested_on": "2026-08-07"
   },
   "skipped_names": [
     "Clamp-on under-desk cable management tray",
@@ -18,6 +18,7 @@
     "Wall-Mounted Drop-Leaf Floating Desk",
     "Compact Armless Ergonomic Mesh Task Chair",
     "Vertical Laptop Stand Holder for Desktop",
-    "Small Folding Computer Desk (No-Assembly Space Saver)"
+    "Small Folding Computer Desk (No-Assembly Space Saver)",
+    "Compact Desktop Monitor Riser Shelf with Storage Drawers"
   ]
 }
