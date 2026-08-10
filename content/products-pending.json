@@ -1,16 +1,15 @@
 {
   "current": {
-    "suggested_name": "Clamp-On Under-Desk Keyboard Tray",
-    "category": "desk",
-    "why_it_fits": "It reclaims valuable desktop space on narrow desks by moving the keyboard and mouse off the main surface without requiring permanent drilling.",
-    "estimated_price_range": "$30-$60",
-    "search_hint": "clamp on under desk keyboard tray",
+    "suggested_name": "Clip-On LED Monitor Light Bar Lamp",
+    "category": "lighting",
+    "why_it_fits": "It mounts directly onto your monitor to illuminate the workspace without taking up any precious surface area on a compact desk.",
+    "estimated_price_range": "$25-$50",
+    "search_hint": "monitor light bar e-reading LED lamp",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-08-09"
+    "suggested_on": "2026-08-10"
   },
   "skipped_names": [
-    "Clamp-On Under-Desk Slide-Out Storage Drawer",
     "Slim 3-tier rolling utility cart for office storage",
     "Clamp-on desk pegboard organizer panel",
     "Wall-Mounted Drop-Leaf Floating Desk",
@@ -19,6 +18,7 @@
     "Small Folding Computer Desk (No-Assembly Space Saver)",
     "Compact Desktop Monitor Riser Shelf with Storage Drawers",
     "Adjustable Screen Top Monitor Shelf Organizer",
-    "Slim Under-Desk Rolling Pedestal File Cabinet"
+    "Slim Under-Desk Rolling Pedestal File Cabinet",
+    "Clamp-On Under-Desk Keyboard Tray"
   ]
 }
