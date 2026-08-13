@@ -1,16 +1,15 @@
 {
   "current": {
-    "suggested_name": "Slim 3-Tier Rolling Utility Cart for Small Spaces",
+    "suggested_name": "Under-Desk Slide-Out Storage Drawer Attachment",
     "category": "storage",
-    "why_it_fits": "It fits into narrow 5-to-8-inch gaps next to small desks to maximize vertical storage without sacrificing valuable floor space.",
-    "estimated_price_range": "$20-$40",
-    "search_hint": "slim rolling utility cart 3 tier",
+    "why_it_fits": "Adds hidden storage for pens, notebooks, and small essentials to minimal or standing desks without taking up valuable floor or desktop space.",
+    "estimated_price_range": "$15-$35",
+    "search_hint": "under desk slide out drawer organizer self adhesive",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-08-12"
+    "suggested_on": "2026-08-13"
   },
   "skipped_names": [
-    "Wall-Mounted Drop-Leaf Floating Desk",
     "Compact Armless Ergonomic Mesh Task Chair",
     "Vertical Laptop Stand Holder for Desktop",
     "Small Folding Computer Desk (No-Assembly Space Saver)",
@@ -19,6 +18,7 @@
     "Slim Under-Desk Rolling Pedestal File Cabinet",
     "Clamp-On Under-Desk Keyboard Tray",
     "Clip-On LED Monitor Light Bar Lamp",
-    "Clamp-On Under-Desk Cable Management Tray"
+    "Clamp-On Under-Desk Cable Management Tray",
+    "Slim 3-Tier Rolling Utility Cart for Small Spaces"
   ]
 }
