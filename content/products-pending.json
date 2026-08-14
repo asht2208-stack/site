@@ -1,16 +1,15 @@
 {
   "current": {
-    "suggested_name": "Under-Desk Slide-Out Storage Drawer Attachment",
+    "suggested_name": "Clamp-On Desktop Pegboard Organizer Rack",
     "category": "storage",
-    "why_it_fits": "Adds hidden storage for pens, notebooks, and small essentials to minimal or standing desks without taking up valuable floor or desktop space.",
-    "estimated_price_range": "$15-$35",
-    "search_hint": "under desk slide out drawer organizer self adhesive",
+    "why_it_fits": "Adds vertical storage for headphones, stationery, and small accessories directly above the desk surface without drilling holes in the wall.",
+    "estimated_price_range": "$35-$70",
+    "search_hint": "clamp on desk pegboard organizer",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-08-13"
+    "suggested_on": "2026-08-14"
   },
   "skipped_names": [
-    "Compact Armless Ergonomic Mesh Task Chair",
     "Vertical Laptop Stand Holder for Desktop",
     "Small Folding Computer Desk (No-Assembly Space Saver)",
     "Compact Desktop Monitor Riser Shelf with Storage Drawers",
@@ -19,6 +18,7 @@
     "Clamp-On Under-Desk Keyboard Tray",
     "Clip-On LED Monitor Light Bar Lamp",
     "Clamp-On Under-Desk Cable Management Tray",
-    "Slim 3-Tier Rolling Utility Cart for Small Spaces"
+    "Slim 3-Tier Rolling Utility Cart for Small Spaces",
+    "Under-Desk Slide-Out Storage Drawer Attachment"
   ]
 }
