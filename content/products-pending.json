@@ -1,16 +1,15 @@
 {
   "current": {
-    "suggested_name": "Small Foldable No-Assembly Computer Desk",
+    "suggested_name": "Wall-Mounted Drop-Leaf Floating Desk",
     "category": "desk",
-    "why_it_fits": "Folds flat in seconds to slide behind a door or under a bed when work is done, making it ideal for temporary or multi-use small spaces.",
-    "estimated_price_range": "$40-$80",
-    "search_hint": "small folding desk no assembly",
+    "why_it_fits": "Folds flat against the wall when not in use, freeing up valuable floor space in tight bedrooms, hallways, or micro-apartments.",
+    "estimated_price_range": "$40-$90",
+    "search_hint": "wall mounted drop leaf desk folding",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-08-25"
+    "suggested_on": "2026-08-28"
   },
   "skipped_names": [
-    "Adjustable Screen Top Monitor Shelf Organizer",
     "Slim Under-Desk Rolling Pedestal File Cabinet",
     "Clamp-On Under-Desk Keyboard Tray",
     "Clip-On LED Monitor Light Bar Lamp",
@@ -19,6 +18,7 @@
     "Under-Desk Slide-Out Storage Drawer Attachment",
     "Clamp-On Desktop Pegboard Organizer Rack",
     "2-in-1 Clamp-On Desk Cup Holder and Headphone Hanger",
-    "Adjustable Vertical Laptop Stand Holder"
+    "Adjustable Vertical Laptop Stand Holder",
+    "Small Foldable No-Assembly Computer Desk"
   ]
 }
