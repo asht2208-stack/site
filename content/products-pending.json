@@ -1,16 +1,15 @@
 {
   "current": {
-    "suggested_name": "Clamp-On Under-Desk Keyboard Tray",
-    "category": "accessories",
-    "why_it_fits": "Frees up critical surface area on shallow or narrow desks without requiring permanent screw holes or tools.",
-    "estimated_price_range": "$35-$65",
-    "search_hint": "clamp on under desk keyboard tray",
+    "suggested_name": "Monitor Light Bar for Small Desks",
+    "category": "lighting",
+    "why_it_fits": "Mounts directly to the top of a computer monitor to illuminate the workspace without taking up any precious desk surface area.",
+    "estimated_price_range": "$30-$60",
+    "search_hint": "monitor light bar desk lamp",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-09-27"
+    "suggested_on": "2026-10-01"
   },
   "skipped_names": [
-    "Clamp-On Under-Desk Cable Management Tray",
     "Slim 3-Tier Rolling Utility Cart for Small Spaces",
     "Under-Desk Slide-Out Storage Drawer Attachment",
     "Clamp-On Desktop Pegboard Organizer Rack",
@@ -19,6 +18,7 @@
     "Small Foldable No-Assembly Computer Desk",
     "Wall-Mounted Drop-Leaf Floating Desk",
     "Armless Swivel Desk Chair for Small Spaces",
-    "Compact Triangular Corner Computer Desk"
+    "Compact Triangular Corner Computer Desk",
+    "Clamp-On Under-Desk Keyboard Tray"
   ]
 }
