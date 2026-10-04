@@ -1,16 +1,15 @@
 {
   "current": {
-    "suggested_name": "Monitor Light Bar for Small Desks",
-    "category": "lighting",
-    "why_it_fits": "Mounts directly to the top of a computer monitor to illuminate the workspace without taking up any precious desk surface area.",
-    "estimated_price_range": "$30-$60",
-    "search_hint": "monitor light bar desk lamp",
+    "suggested_name": "Clamp-On Under-Desk Cable Management Tray",
+    "category": "cables",
+    "why_it_fits": "It keeps messy power bricks and cords off the floor to maximize legroom without needing to drill into thin, compact desktop surfaces.",
+    "estimated_price_range": "$20-$35",
+    "search_hint": "clamp on under desk cable management tray",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-10-01"
+    "suggested_on": "2026-10-04"
   },
   "skipped_names": [
-    "Slim 3-Tier Rolling Utility Cart for Small Spaces",
     "Under-Desk Slide-Out Storage Drawer Attachment",
     "Clamp-On Desktop Pegboard Organizer Rack",
     "2-in-1 Clamp-On Desk Cup Holder and Headphone Hanger",
@@ -19,6 +18,7 @@
     "Wall-Mounted Drop-Leaf Floating Desk",
     "Armless Swivel Desk Chair for Small Spaces",
     "Compact Triangular Corner Computer Desk",
-    "Clamp-On Under-Desk Keyboard Tray"
+    "Clamp-On Under-Desk Keyboard Tray",
+    "Monitor Light Bar for Small Desks"
   ]
 }
