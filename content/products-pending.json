@@ -1,16 +1,15 @@
 {
   "current": {
-    "suggested_name": "Vertical Laptop Stand Desktop Dock",
-    "category": "storage",
-    "why_it_fits": "Holds closed laptops upright to instantly reclaim valuable surface area on compact desks when connected to an external monitor.",
-    "estimated_price_range": "$15-$30",
-    "search_hint": "vertical laptop stand holder desktop",
+    "suggested_name": "Collapsible No-Assembly Folding Computer Desk",
+    "category": "desk",
+    "why_it_fits": "Folds completely flat to slide into a closet, behind a door, or under a bed when work is done, making it ideal for multi-use rooms and dorms.",
+    "estimated_price_range": "$45-$90",
+    "search_hint": "folding computer desk small spaces no assembly",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-10-17"
+    "suggested_on": "2026-10-18"
   },
   "skipped_names": [
-    "Wall-Mounted Drop-Leaf Floating Desk",
     "Armless Swivel Desk Chair for Small Spaces",
     "Compact Triangular Corner Computer Desk",
     "Clamp-On Under-Desk Keyboard Tray",
@@ -19,6 +18,7 @@
     "Slim 3-Tier Rolling Utility Storage Cart",
     "Under-Desk Slide-Out Storage Drawer",
     "Clamp-on desk pegboard organizer panel",
-    "Clamp-on desk cup holder with headphone hanger"
+    "Clamp-on desk cup holder with headphone hanger",
+    "Vertical Laptop Stand Desktop Dock"
   ]
 }
