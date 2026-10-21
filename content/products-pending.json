@@ -1,16 +1,15 @@
 {
   "current": {
-    "suggested_name": "Wall-Mounted Drop-Leaf Floating Folding Desk",
-    "category": "desk",
-    "why_it_fits": "It mounts directly to the wall and folds flat against the surface when not in use, freeing up 100% of the room's floor space in tight bedrooms or studio apartments.",
-    "estimated_price_range": "$40-$90",
-    "search_hint": "wall mounted drop leaf folding desk",
+    "suggested_name": "Armless Wide-Seat Swivel Desk Chair (Criss-Cross Style)",
+    "category": "chair",
+    "why_it_fits": "Its armless profile allows it to tuck completely under shallow or small desks to keep walkways clear in tight rooms.",
+    "estimated_price_range": "$60-$110",
+    "search_hint": "armless criss cross desk chair",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-10-20"
+    "suggested_on": "2026-10-21"
   },
   "skipped_names": [
-    "Compact Triangular Corner Computer Desk",
     "Clamp-On Under-Desk Keyboard Tray",
     "Monitor Light Bar for Small Desks",
     "Clamp-On Under-Desk Cable Management Tray",
@@ -19,6 +18,7 @@
     "Clamp-on desk pegboard organizer panel",
     "Clamp-on desk cup holder with headphone hanger",
     "Vertical Laptop Stand Desktop Dock",
-    "Collapsible No-Assembly Folding Computer Desk"
+    "Collapsible No-Assembly Folding Computer Desk",
+    "Wall-Mounted Drop-Leaf Floating Folding Desk"
   ]
 }
