@@ -1,16 +1,15 @@
 {
   "current": {
-    "suggested_name": "Desktop Monitor Stand Riser with Pull-Out Drawer",
+    "suggested_name": "Clamp-On Under-Desk Ergonomic Keyboard Tray",
     "category": "storage",
-    "why_it_fits": "It raises the screen to an ergonomic eye level while recapturing precious desk surface area for notebooks, office supplies, or sliding a keyboard underneath.",
-    "estimated_price_range": "$20-$40",
-    "search_hint": "monitor stand riser with drawer desk organizer",
+    "why_it_fits": "Frees up valuable desktop real estate on shallow desks by shifting the keyboard and mouse beneath the work surface without requiring drilling.",
+    "estimated_price_range": "$35-$65",
+    "search_hint": "clamp on under desk keyboard tray",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-10-24"
+    "suggested_on": "2026-10-25"
   },
   "skipped_names": [
-    "Monitor Light Bar for Small Desks",
     "Clamp-On Under-Desk Cable Management Tray",
     "Slim 3-Tier Rolling Utility Storage Cart",
     "Under-Desk Slide-Out Storage Drawer",
@@ -19,6 +18,7 @@
     "Vertical Laptop Stand Desktop Dock",
     "Collapsible No-Assembly Folding Computer Desk",
     "Wall-Mounted Drop-Leaf Floating Folding Desk",
-    "Armless Wide-Seat Swivel Desk Chair (Criss-Cross Style)"
+    "Armless Wide-Seat Swivel Desk Chair (Criss-Cross Style)",
+    "Desktop Monitor Stand Riser with Pull-Out Drawer"
   ]
 }
