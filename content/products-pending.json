@@ -1,16 +1,15 @@
 {
   "current": {
-    "suggested_name": "Monitor Light Bar / Screenbar Desk Lamp",
-    "category": "lighting",
-    "why_it_fits": "Clamps directly onto the top of a computer monitor to illuminate the workspace without taking up any precious surface area on a compact desk.",
-    "estimated_price_range": "$25-$60",
-    "search_hint": "monitor light bar screenbar desk lamp",
+    "suggested_name": "Clamp-On Under-Desk Cable Management Tray (No-Drill)",
+    "category": "cables",
+    "why_it_fits": "Keeps power strips and messy cords off the floor to maximize scarce legroom under compact desks without requiring permanent screw holes.",
+    "estimated_price_range": "$20-$40",
+    "search_hint": "clamp on under desk cable management tray no drill",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-11-01"
+    "suggested_on": "2026-11-07"
   },
   "skipped_names": [
-    "Slim 3-Tier Rolling Utility Storage Cart",
     "Under-Desk Slide-Out Storage Drawer",
     "Clamp-on desk pegboard organizer panel",
     "Clamp-on desk cup holder with headphone hanger",
@@ -19,6 +18,7 @@
     "Wall-Mounted Drop-Leaf Floating Folding Desk",
     "Armless Wide-Seat Swivel Desk Chair (Criss-Cross Style)",
     "Desktop Monitor Stand Riser with Pull-Out Drawer",
-    "Clamp-On Under-Desk Ergonomic Keyboard Tray"
+    "Clamp-On Under-Desk Ergonomic Keyboard Tray",
+    "Monitor Light Bar / Screenbar Desk Lamp"
   ]
 }
