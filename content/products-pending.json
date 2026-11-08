@@ -1,16 +1,15 @@
 {
   "current": {
-    "suggested_name": "Clamp-On Under-Desk Cable Management Tray (No-Drill)",
-    "category": "cables",
-    "why_it_fits": "Keeps power strips and messy cords off the floor to maximize scarce legroom under compact desks without requiring permanent screw holes.",
-    "estimated_price_range": "$20-$40",
-    "search_hint": "clamp on under desk cable management tray no drill",
+    "suggested_name": "Slim 3-Tier Rolling Utility Cart with Wheels",
+    "category": "storage",
+    "why_it_fits": "Provides tiered vertical organization that slides into narrow gaps between a compact desk and the wall or rolls completely out of the way when not in use.",
+    "estimated_price_range": "$25-$45",
+    "search_hint": "slim 3 tier rolling utility cart",
     "status": "pending_review",
     "note": "AI-suggested category, NOT a verified product. Find a real matching item on Amazon, confirm its actual price/specs/ASIN, then add it to content/products.json yourself with your affiliate tag.",
-    "suggested_on": "2026-11-07"
+    "suggested_on": "2026-11-08"
   },
   "skipped_names": [
-    "Under-Desk Slide-Out Storage Drawer",
     "Clamp-on desk pegboard organizer panel",
     "Clamp-on desk cup holder with headphone hanger",
     "Vertical Laptop Stand Desktop Dock",
@@ -19,6 +18,7 @@
     "Armless Wide-Seat Swivel Desk Chair (Criss-Cross Style)",
     "Desktop Monitor Stand Riser with Pull-Out Drawer",
     "Clamp-On Under-Desk Ergonomic Keyboard Tray",
-    "Monitor Light Bar / Screenbar Desk Lamp"
+    "Monitor Light Bar / Screenbar Desk Lamp",
+    "Clamp-On Under-Desk Cable Management Tray (No-Drill)"
   ]
 }
